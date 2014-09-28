@@ -38,7 +38,6 @@ module.exports = function (app, config) {
   testRouter.get('/exception', timeout(1000), test.testUnhandledException); // test UnhandledException
   testRouter.get('/memory-leak', timeout(10000000), test.testMemoryLeak); // test Memory leak
   testRouter.get('/out-of-memory', timeout(10000000), test.testOutOfMemory); // test Out of Memory
-  testRouter.get('/chunk', timeout(1000), test.testChunk); // test Out of Memory
   testRouter.get('/long-time', timeout(1000000), test.testLongTime); // test long time loading resource
   testRouter.get('/js-long-long-time', timeout(1000000), test.testJsLongLongTime); // test long time loading resource
   // ----------------------------------------------------------------------

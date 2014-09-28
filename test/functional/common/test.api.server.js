@@ -21,7 +21,9 @@ describe('API Test services', function () {
     request
       .get(apiEndPoint + 'test/timeout')
       .end(function (err, res) {
-        done();
+        if (res.error && res.error.status === 503) {
+          done();
+        }
       });
   });
 
@@ -29,31 +31,9 @@ describe('API Test services', function () {
     request
       .get(apiEndPoint + 'test/exception')
       .end(function (err, res) {
-        done();
-      });
-  });
-
-  it('Should test memory-leak service', function (done) {
-    request
-      .get(apiEndPoint + 'test/memory-leak')
-      .end(function (err, res) {
-        done();
-      });
-  });
-
-  it('Should test out-of-memory service', function (done) {
-    request
-      .get(apiEndPoint + 'test/out-of-memory service')
-      .end(function (err, res) {
-        done();
-      });
-  });
-
-  it('Should test chunk service', function (done) {
-    request
-      .get(apiEndPoint + 'test/chunk')
-      .end(function (err, res) {
-        done();
+        if (res.error && res.error.status === 500) {
+          done();
+        }
       });
   });
 

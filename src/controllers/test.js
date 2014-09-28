@@ -104,13 +104,6 @@ exports.testJsLongLongTime = function (req, res) {
   }, 20000);
 };
 
-exports.testChunk = function (req, res) {
-  winston.info(req.param('d'));
-  res.jsonp({
-    ok: true
-  });
-};
-
 function BigObject() {
 
   this.garbage = [];
