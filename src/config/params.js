@@ -18,6 +18,13 @@ module.exports = exports = {
   sockettimeout: 20000, // idle socket timeout
   maxLag: 200, // Too Busy max lag (ms)
   cookiesSecret: "-Scrt_123.::;109",
+  data: {
+    name: 'api',
+    host: '127.0.0.1',
+    port: 27017,
+    poolsize: 5,
+    options: {}
+  },
   logging: {
     directory: path.normalize(__dirname + '/../../' + '/log/'),
     console: {
@@ -27,7 +34,7 @@ module.exports = exports = {
       timestamp: true
     },
     file: {
-      filename: path.normalize(__dirname + '/../../' + '/log/') + 'retarget.log',
+      filename: path.normalize(__dirname + '/../../' + '/log/') + 'error.log',
       level: 'warn',
       json: false,
       colorize: false,

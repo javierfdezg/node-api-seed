@@ -9,10 +9,6 @@
 "use strict";
 
 var request = require('superagent');
-var assert = require('assert');
-var expect = require('expect.js');
-var should = require('should');
-var _ = require('underscore');
 var apiEndPoint = "http://127.0.0.1:4000/";
 
 describe('API Test services', function () {

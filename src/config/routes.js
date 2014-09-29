@@ -40,6 +40,7 @@ module.exports = function (app, config) {
   testRouter.get('/out-of-memory', timeout(10000000), test.testOutOfMemory); // test Out of Memory
   testRouter.get('/long-time', timeout(1000000), test.testLongTime); // test long time loading resource
   testRouter.get('/js-long-long-time', timeout(1000000), test.testJsLongLongTime); // test long time loading resource
+  testRouter.get('/mongo-connection', timeout(1000000), test.testMongoConnection); // test mongo connection
   // ----------------------------------------------------------------------
 
   // Define here your api routes

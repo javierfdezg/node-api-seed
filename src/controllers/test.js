@@ -8,7 +8,8 @@
 
 var winston = require('winston'),
   fs = require('fs'),
-  path = require('path');
+  path = require('path'),
+  util = require('../lib/util');
 
 /**
  * Used to test timeout condition in a request with no response
@@ -65,6 +66,21 @@ exports.testMemoryLeak = function (req, res) {
   }, 10);
   res.jsonp({
     ok: true
+  });
+};
+
+exports.testMongoConnection = function (req, res) {
+  // Mongo connection
+  require('../lib/data')(null, null, function (err, conn) {
+    if (err) {
+      util.sendResponse(req, res, 500, {
+        message: 'No mongo connection available'
+      });
+    } else {
+      util.sendResponse(req, res, 200, {
+        message: 'Mongo connection success!'
+      });
+    }
   });
 };
 

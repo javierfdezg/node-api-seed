@@ -55,42 +55,53 @@ if (cluster.isMaster && config.clusterMode) {
   // Logging config
   require('./config/logging')(app, config);
 
-  // ==============================================================
-  // Routes for retarget API & static resources middleware config.
-  // ==============================================================
+  // Data layer connection and server startup
+  require('./lib/data')(app, config.data, function (err) {
+    // No data connection available
+    if (err) {
+      winston.error(err.toString());
+    } else {
 
-  require('./config/routes')(app, config);
+      winston.info("Mongo connection established")
 
-  require('./config/shutdown')(app, config);
+      // ==============================================================
+      // Routes for retarget API & static resources middleware config.
+      // ==============================================================
 
-  // HTTPS config
-  var options = {
-    ca: fs.readFileSync(config.ssl.servercapath),
-    key: fs.readFileSync(config.ssl.serverkeypath),
-    cert: fs.readFileSync(config.ssl.servercrtpath),
-    requestCert: false,
-    rejectUnauthorized: false
-  };
+      require('./config/routes')(app, config);
 
-  // Start listening
-  var httpServer = http.createServer(app).listen(config.httpp);
-  winston.info("HTTP server started at %d port", config.httpp);
-  // Avoid ESTABLISHED sockets bug: lsof -i -n -P | grep node
-  httpServer.on('connection', function (socket) {
-    socket.setTimeout(config.sockettimeout, function () {
-      socket.destroy();
-      winston.verbose("HTTP socket destroyed after %d milliseconds", config.sockettimeout);
-    });
+      require('./config/shutdown')(app, config);
+
+      // HTTPS config
+      var options = {
+        ca: fs.readFileSync(config.ssl.servercapath),
+        key: fs.readFileSync(config.ssl.serverkeypath),
+        cert: fs.readFileSync(config.ssl.servercrtpath),
+        requestCert: false,
+        rejectUnauthorized: false
+      };
+
+      // Start listening
+      var httpServer = http.createServer(app).listen(config.httpp);
+      winston.info("HTTP server started at %d port", config.httpp);
+      // Avoid ESTABLISHED sockets bug: lsof -i -n -P | grep node
+      httpServer.on('connection', function (socket) {
+        socket.setTimeout(config.sockettimeout, function () {
+          socket.destroy();
+          winston.verbose("HTTP socket destroyed after %d milliseconds", config.sockettimeout);
+        });
+      });
+
+      if (config.activessl) {
+        var httpsServer = https.createServer(options, app).listen(config.httpsp);
+        winston.info("HTTPS server started at %d port", config.httpsp);
+        // https://github.com/joyent/node/issues/7764
+        httpsServer.on("secureConnection", function (clearText) {
+          clearText.setTimeout(config.sockettimeout);
+        });
+      }
+    }
   });
-
-  if (config.activessl) {
-    var httpsServer = https.createServer(options, app).listen(config.httpsp);
-    winston.info("HTTPS server started at %d port", config.httpsp);
-    // https://github.com/joyent/node/issues/7764
-    httpsServer.on("secureConnection", function (clearText) {
-      clearText.setTimeout(config.sockettimeout);
-    });
-  }
 
 }
 

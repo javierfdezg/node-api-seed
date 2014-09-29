@@ -2,12 +2,17 @@
 
 ## Getting Started
 
+Install mongodb 
+
+`brew update`
+`brew install mongodb`
+
 Install the module dependencies with: 
 
 `npm install`
 `sudo npm install -g mocha`
 
-## Running server
+## Running server and mongod
 
 Run  `grunt`
 

@@ -27,6 +27,19 @@ module.exports = function (grunt) {
       }
     },
 
+    external_daemon: {
+      mongodb: {
+        options: {
+          verbose: false,
+          startCheck: function (stdout, stderr) {
+            return /waiting for connections/.test(stdout);
+          }
+        },
+        cmd: 'mongod',
+        args: []
+      }
+    },
+
     shell: {
       // Change this command to whatever command you want to run in parallel to node server
       elasticsearch: {
@@ -55,7 +68,7 @@ module.exports = function (grunt) {
   });
 
   // Default task
-  grunt.registerTask('default', ['concurrent:dev']);
+  grunt.registerTask('default', ['external_daemon:mongodb', 'concurrent:dev']);
 
   // Test
   grunt.registerTask('test', ['shell:functional']);
