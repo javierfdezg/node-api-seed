@@ -142,23 +142,6 @@ exports.testLongTime = function (req, res) {
   }, 10000);
 };
 
-/**
- * [testJsLongLongTime description]
- * @param  {[type]} req [description]
- * @param  {[type]} res [description]
- * @return {[type]}     [description]
- */
-exports.testJsLongLongTime = function (req, res) {
-  setTimeout(function () {
-    var inga = fs.readFileSync(path.normalize(__dirname + '../../../web/development/js/long.js'));
-    res.writeHead(200, {
-      'Content-Type': 'text/javascript'
-    });
-    res.end(inga, 'binary');
-    winston.info('Long long time js request finished');
-  }, 20000);
-};
-
 function BigObject() {
 
   this.garbage = [];

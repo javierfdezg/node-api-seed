@@ -55,7 +55,6 @@ module.exports = function (app, config) {
   testRouter.get('/memory-leak', timeout(10000000), test.testMemoryLeak); // test Memory leak
   testRouter.get('/out-of-memory', timeout(10000000), test.testOutOfMemory); // test Out of Memory
   testRouter.get('/long-time', timeout(1000000), test.testLongTime); // test long time loading resource
-  testRouter.get('/js-long-long-time', timeout(1000000), test.testJsLongLongTime); // test long time loading resource
   testRouter.get('/mongo-connection', timeout(2000), test.testMongoConnection); // test mongo connection
   testRouter.get('/protected', timeout(2000), test.testProtected); // test protected resource
   testRouter.post('/user', timeout(2000), test.testCreateUser); // test create user

@@ -46,16 +46,4 @@ describe('API Test services', function () {
       });
   });
 
-  it('Should test js-long-long-time service', function (done) {
-    this.timeout(5000);
-    request
-      .get(apiEndPoint + 'test/js-long-long-time')
-      .timeout(1000)
-      .end(function (err, res) {
-        if (err.timeout) {
-          done();
-        }
-      });
-  });
-
 });
