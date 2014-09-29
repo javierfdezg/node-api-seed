@@ -18,9 +18,7 @@ var winston = require('winston'),
  * @param  {[type]} res
  * @return {[type]}
  */
-exports.testTimeout = function (req, res) {
-  winston.verbose('[API request] %s -- %s %s', req.ip, req.method, req.url);
-};
+exports.testTimeout = function (req, res) {};
 
 /**
  * Used to test unhandled exception in request
@@ -29,7 +27,6 @@ exports.testTimeout = function (req, res) {
  * @return {[type]}
  */
 exports.testUnhandledException = function (req, res) {
-  winston.verbose('[API request] %s -- %s %s', req.ip, req.method, req.url);
   throw new Error("oops, we'll crash"); // Unexpected action exception
 };
 
@@ -40,8 +37,6 @@ exports.testUnhandledException = function (req, res) {
  * @return {[type]}
  */
 exports.testOutOfMemory = function (req, res) {
-
-  winston.verbose('[API request] %s -- %s %s', req.ip, req.method, req.url);
 
   var stack = [];
   var bigObject = null;
@@ -61,7 +56,6 @@ exports.testOutOfMemory = function (req, res) {
  */
 exports.testMemoryLeak = function (req, res) {
   var heap = [];
-  winston.verbose('[API request] %s -- %s %s', req.ip, req.method, req.url);
   setInterval(function () {
     heap[heap.length] = (new BigObject()).fill();
   }, 10);
@@ -98,14 +92,11 @@ exports.testMongoConnection = function (req, res) {
  * @return {[type]}     [description]
  */
 exports.testProtected = function (req, res) {
-  winston.verbose('[API request] %s -- %s %s', req.ip, req.method, req.url);
   if (req.user) {
-    winston.verbose('[API request] %s -- %s %s', req.ip, req.method, req.url);
     util.sendResponse(req, res, 200, {
       secured: req.user
     });
   } else {
-    winston.verbose('[API FOERF] %s -- %s %s', req.ip, req.method, req.url);
     util.sendResponse(req, res, 401, {
       error: 'Forbidden'
     });
