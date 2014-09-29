@@ -17,13 +17,17 @@ module.exports = exports = {
   httpsp: 4001, // https port
   sockettimeout: 20000, // idle socket timeout
   maxLag: 200, // Too Busy max lag (ms)
-  cookiesSecret: "-Scrt_123.::;109",
+  cookiesSecret: "-WNSScrt_123.::;109",
   data: {
-    name: 'api',
+    name: 'api', // Database name
     host: '127.0.0.1',
     port: 27017,
     poolsize: 5,
-    options: {}
+    options: {}, // MongoDB options
+    userscollection: 'users', // Collection for users
+    tokenscollection: 'tokens', // Collection for bearer tokens
+    tokenexpiration: 60 * 60 * 24 * 30, // Token expiration time in seconds
+    testuserexpiration: 60 // Test user expiration time in seconds
   },
   logging: {
     directory: path.normalize(__dirname + '/../../' + '/log/'),

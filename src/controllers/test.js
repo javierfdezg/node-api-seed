@@ -9,7 +9,8 @@
 var winston = require('winston'),
   fs = require('fs'),
   path = require('path'),
-  util = require('../lib/util');
+  util = require('../lib/util'),
+  data = require('../lib/data');
 
 /**
  * Used to test timeout condition in a request with no response
@@ -69,6 +70,12 @@ exports.testMemoryLeak = function (req, res) {
   });
 };
 
+/**
+ * Try to connect to mongodb
+ * @param  {[type]} req [description]
+ * @param  {[type]} res [description]
+ * @return {[type]}     [description]
+ */
 exports.testMongoConnection = function (req, res) {
   // Mongo connection
   require('../lib/data')(null, null, function (err, conn) {
@@ -85,13 +92,55 @@ exports.testMongoConnection = function (req, res) {
 };
 
 /**
+ * Secured service
+ * @param  {[type]} req [description]
+ * @param  {[type]} res [description]
+ * @return {[type]}     [description]
+ */
+exports.testProtected = function (req, res) {
+  winston.verbose('[API request] %s -- %s %s', req.ip, req.method, req.url);
+  if (req.user) {
+    winston.verbose('[API request] %s -- %s %s', req.ip, req.method, req.url);
+    util.sendResponse(req, res, 200, {
+      secured: req.user
+    });
+  } else {
+    winston.verbose('[API FOERF] %s -- %s %s', req.ip, req.method, req.url);
+    util.sendResponse(req, res, 401, {
+      error: 'Forbidden'
+    });
+  }
+
+};
+
+/**
+ * Create one user
+ * @param  {[type]} req [description]
+ * @param  {[type]} res [description]
+ * @return {[type]}     [description]
+ */
+exports.testCreateUser = function (req, res) {
+  var user = req.body;
+  user.delete_from = new Date(); // Set expiration (test users can be deleted)
+  data.createUser(user, function (err, usr) {
+    if (err) {
+      util.sendResponse(req, res, 500, {
+        error: 'Error creating user'
+      });
+    } else {
+      util.sendResponse(req, res, 200, usr);
+    }
+  })
+
+};
+
+/**
  * Long time resource load
  * @param  {[type]} req [description]
  * @param  {[type]} res [description]
  * @return {[type]}     [description]
  */
 exports.testLongTime = function (req, res) {
-  winston.info('Begin long time resource request');
   setTimeout(function () {
     var img = fs.readFileSync(path.normalize(__dirname + '../../../web/development/img/futurama.png'));
     res.writeHead(200, {
@@ -109,7 +158,6 @@ exports.testLongTime = function (req, res) {
  * @return {[type]}     [description]
  */
 exports.testJsLongLongTime = function (req, res) {
-  winston.info('Begin long long time js request');
   setTimeout(function () {
     var inga = fs.readFileSync(path.normalize(__dirname + '../../../web/development/js/long.js'));
     res.writeHead(200, {

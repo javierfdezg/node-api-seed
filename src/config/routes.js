@@ -13,14 +13,18 @@ var toobusy = require('toobusy');
 var responseTime = require('response-time');
 var cors = require('cors');
 var cookieParser = require('cookie-parser');
+var util = require('../lib/util');
+var bodyParser = require('body-parser');
 
 module.exports = function (app, config) {
 
   var router = express.Router(); // get an instance of the express Router
+  var authenticateRouter = express.Router(); // get an instance of the express Router
   var testRouter = express.Router(); // get another instance of the express Router for testing routes
 
   // -------- Controllers ------
   var test = require('../controllers/test'); // TEST API services
+  var auth = require('../controllers/auth'); // AUTH API services
   // Require here your api controllers 
 
   // -------- Routes --------
@@ -28,10 +32,22 @@ module.exports = function (app, config) {
   // Amazon elb health check. This always return 200 status code because we are not using this 
   // to manage the auto launching.
   router.get('/elb-ping', timeout(5000), function (req, res) {
-    res.json({
+    util.sendResponse(req, res, 200, {
       ok: true
     });
   });
+
+  // User user/password middleware to validate user
+  authenticateRouter.use(require('../middleware/security').userPassword);
+
+  // Use bearer middleware to validate bearer token if present
+  router.use(require('../middleware/security').bearer);
+  testRouter.use(require('../middleware/security').bearer);
+
+  // Body parser
+  router.use(bodyParser.json());
+  authenticateRouter.use(bodyParser.json());
+  testRouter.use(bodyParser.json());
 
   // ------------------------- TEST ONLY SERVICES -------------------------
   testRouter.get('/timeout', timeout(1000), test.testTimeout); // test timeout middleware
@@ -40,7 +56,13 @@ module.exports = function (app, config) {
   testRouter.get('/out-of-memory', timeout(10000000), test.testOutOfMemory); // test Out of Memory
   testRouter.get('/long-time', timeout(1000000), test.testLongTime); // test long time loading resource
   testRouter.get('/js-long-long-time', timeout(1000000), test.testJsLongLongTime); // test long time loading resource
-  testRouter.get('/mongo-connection', timeout(1000000), test.testMongoConnection); // test mongo connection
+  testRouter.get('/mongo-connection', timeout(2000), test.testMongoConnection); // test mongo connection
+  testRouter.get('/protected', timeout(2000), test.testProtected); // test protected resource
+  testRouter.post('/user', timeout(2000), test.testCreateUser); // test create user
+  // ----------------------------------------------------------------------
+
+  // --------------------------- AUTH SERVICES ----------------------------
+  authenticateRouter.get('/token', timeout(2000), auth.token);
   // ----------------------------------------------------------------------
 
   // Define here your api routes
@@ -73,13 +95,18 @@ module.exports = function (app, config) {
     // check if we're toobusy()
     if (toobusy()) {
       winston.warn('[API TOOBUSY ERROR] %s -- %s %s', req.ip, req.method, req.path);
-      res.jsonp(503, {
+      util.sendResponse(req, res, 503, {
         error: "Server too busy"
       });
     } else {
       next();
     }
   });
+
+  app.use(haltOnTimedout);
+
+  // Main router
+  app.use('/auth', authenticateRouter);
 
   app.use(haltOnTimedout);
 
@@ -98,7 +125,7 @@ module.exports = function (app, config) {
   // 404 routes
   app.use(function (req, res, next) {
     winston.verbose('[API 404 ERROR] %s -- %s %s', req.ip, req.method, req.path);
-    res.jsonp(404, {
+    util.sendResponse(req, res, 404, {
       error: "Not found"
     });
   });
@@ -118,11 +145,11 @@ module.exports = function (app, config) {
     else if (err) {
       var errorDesc = (err.stack) ? err.stack : JSON.stringify(err, null, '\t');
       winston.error("[API 500 ERROR] %s -- %s %s \n %s", req.ip, req.method, req.path, errorDesc);
-      res.jsonp(500, {
+      util.sendResponse(req, res, 500, {
         error: "Unknow error"
       });
     } else {
-      res.jsonp(500, {
+      util.sendResponse(req, res, 500, {
         error: "Unknow error"
       });
     }

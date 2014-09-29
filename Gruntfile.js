@@ -50,6 +50,9 @@ module.exports = function (grunt) {
       },
       functional: {
         command: 'mocha -R spec --recursive test/functional',
+      },
+      unit: {
+        command: 'mocha -R spec --recursive test/unit',
       }
     },
 
@@ -71,6 +74,6 @@ module.exports = function (grunt) {
   grunt.registerTask('default', ['external_daemon:mongodb', 'concurrent:dev']);
 
   // Test
-  grunt.registerTask('test', ['shell:functional']);
+  grunt.registerTask('test', ['shell:unit', 'shell:functional']);
 
 };
