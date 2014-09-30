@@ -64,7 +64,9 @@ module.exports = function (app, config) {
   authenticateRouter.get('/token', timeout(2000), auth.token);
   // ----------------------------------------------------------------------
 
-  // Define here your api routes
+  // --------------------------- API ROUTES -------------------------------
+  require('./versionRouter')(app, config, router);
+  // ----------------------------------------------------------------------
 
   // Add X-Response-Time header (response time) in every response
   app.use(responseTime());

@@ -48,6 +48,10 @@ describe('API security layer', function () {
       });
   });
 
+  it('Should return error trying to save duplicate email', function (done) {
+
+  });
+
   it('Should create a new user, login with that user and get the bearer token, and then get protected resource', function (done) {
 
     this.timeout(10000);
