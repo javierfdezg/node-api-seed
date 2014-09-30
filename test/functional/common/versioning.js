@@ -54,4 +54,24 @@ describe('API Version detection', function () {
       });
   });
 
+  it('Should return 404 Not Found', function (done) {
+    request
+      .get(apiEndPoint + 'v1/not-found/info-route')
+      .end(function (err, res) {
+        if (res.error && res.error.status === 404) {
+          done();
+        }
+      });
+  });
+
+  it('Should return 404 Not Found', function (done) {
+    request
+      .get(apiEndPoint + 'v2/not-found/info-route')
+      .end(function (err, res) {
+        if (res.error && res.error.status === 404) {
+          done();
+        }
+      });
+  });
+
 });

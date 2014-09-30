@@ -175,19 +175,27 @@ module.exports.createUser = function (usr, cb) {
     if (err) {
       cb(err);
     } else if (usr.password) {
-      // Encrypt password and save with salt
-      util.hasher({
-        plainText: usr.password
-      }, function (err, opts) {
+      module.exports.searchUserByEmail(usr.email, function (err, userExists) {
         if (err) {
-          console.log('Error encrypting password');
+          cb('Error searching user by email');
+        } else if (userExists) {
+          cb('Email already exists', userExists);
         } else {
-          usr.password = opts.key;
-          usr.salt = opts.salt;
-          usersCollection.insert(usr, {
-            w: 1
-          }, function (err, userObject) {
-            cb && cb(err, userObject);
+          // Encrypt password and save with salt
+          util.hasher({
+            plainText: usr.password
+          }, function (err, opts) {
+            if (err) {
+              console.log('Error encrypting password');
+            } else {
+              usr.password = opts.key;
+              usr.salt = opts.salt;
+              usersCollection.insert(usr, {
+                w: 1
+              }, function (err, userObject) {
+                cb && cb(err, userObject);
+              });
+            }
           });
         }
       });

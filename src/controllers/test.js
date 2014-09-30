@@ -114,7 +114,12 @@ exports.testCreateUser = function (req, res) {
   var user = req.body;
   user.delete_from = new Date(); // Set expiration (test users can be deleted)
   data.createUser(user, function (err, usr) {
-    if (err) {
+    if (err && usr) {
+      util.sendResponse(req, res, 400, {
+        error: err
+      });
+    } else if (err) {
+      winston.error("[API TEST ERROR] %s", err);
       util.sendResponse(req, res, 500, {
         error: 'Error creating user'
       });
