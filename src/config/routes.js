@@ -15,12 +15,24 @@ var cors = require('cors');
 var cookieParser = require('cookie-parser');
 var util = require('../lib/util');
 var bodyParser = require('body-parser');
+var I18n = require('i18n-2');
+var i18nm = require('../middleware/i18n');
+var path = require('path');
 
 module.exports = function (app, config) {
 
   var router = express.Router(); // get an instance of the express Router
   var authenticateRouter = express.Router(); // get an instance of the express Router
   var testRouter = express.Router(); // get another instance of the express Router for testing routes
+
+  // Attach the i18n property to the express request object and attach helper methods for use in templates
+  I18n.expressBind(app, {
+    // setup some locales - other locales default to en silently
+    locales: ['en', 'es', 'pt'],
+    directory: path.normalize(__dirname + '/../locales'),
+    extension: '.js',
+    query: true
+  });
 
   // -------- Controllers ------
   var test = require('../controllers/test'); // TEST API services
@@ -48,6 +60,11 @@ module.exports = function (app, config) {
   router.use(bodyParser.json());
   authenticateRouter.use(bodyParser.json());
   testRouter.use(bodyParser.json());
+
+  // I18N
+  router.use(i18nm);
+  authenticateRouter.use(i18nm);
+  testRouter.use(i18nm);
 
   // ------------------------- TEST ONLY SERVICES -------------------------
   testRouter.get('/timeout', timeout(1000), test.testTimeout); // test timeout middleware

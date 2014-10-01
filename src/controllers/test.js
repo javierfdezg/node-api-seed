@@ -75,11 +75,11 @@ exports.testMongoConnection = function (req, res) {
   require('../lib/data')(null, null, function (err, conn) {
     if (err) {
       util.sendResponse(req, res, 500, {
-        message: 'No mongo connection available'
+        error: 'No mongo connection available'
       });
     } else {
       util.sendResponse(req, res, 200, {
-        message: 'Mongo connection success!'
+        message: req.i18n.__('Mongo connection success!')
       });
     }
   });

@@ -65,7 +65,7 @@ if (cluster.isMaster && config.clusterMode) {
       winston.info("Mongo connection established")
 
       // ==============================================================
-      // Routes for retarget API & static resources middleware config.
+      // Routes for API & static resources middleware config.
       // ==============================================================
 
       require('./config/routes')(app, config);
