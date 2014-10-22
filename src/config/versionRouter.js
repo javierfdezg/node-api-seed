@@ -31,29 +31,20 @@ module.exports = function (app, config, router) {
 
   // ------------------------- ROUTES -------------------------------------
   // The next route matchs with /info   /info/   /v1/info   /v2/info   /v1/info/   etc...
-  router.get(exports.regExpRoute("info"), timeout(2000), exports.action('info', 'info'));
+  router.get('/:version/info', timeout(2000), exports.execAction('info', 'info'));
   // ----------------------------------------------------------------------
 
 };
 
 /**
- * Return regular expression for path
- * @param  {[type]} path [description]
- * @return {[type]}      [description]
+ * Execute action based on controler/action names
+ * @param {[type]} req [description]
+ * @return {[type]} [description]
  */
-exports.regExpRoute = function (path) {
-  return new RegExp("^(\/v[0-9]+)?\/" + path + "(\/)?$");
-};
-
-/**
- * Get action based on controler/action names
- * @param  {[type]} req [description]
- * @return {[type]}     [description]
- */
-exports.action = function (controller, action) {
+exports.execAction = function (controller, action) {
   return (function (req, res, next) {
     var vs = exports.version(req);
-    if (vs[controller] !== undefined && vs[controller][action] !== undefined) {
+    if (vs && vs[controller] !== undefined && vs[controller][action] !== undefined) {
       vs[controller][action](req, res, next);
     } else {
       next();
@@ -63,8 +54,8 @@ exports.action = function (controller, action) {
 
 /**
  * Get API version based on URI. If not defined return default version
- * @param  {[type]} req [description]
- * @return {[type]}     [description]
+ * @param {[type]} req [description]
+ * @return {[type]} [description]
  */
 exports.version = function (req) {
   var parts = null;
@@ -73,7 +64,9 @@ exports.version = function (req) {
     // Version available
     if (exports.VERSIONS[parts[1]] !== undefined) {
       return exports.VERSIONS[parts[1]];
+    } else {
+      return null;
     }
   }
-  return exports.VERSIONS['v1'];
+  return null;
 };
