@@ -11,7 +11,7 @@ var path = require('path');
 module.exports = exports = {
   appName: 'seed-node-api',
   clusterMode: true,
-  activessl: true,
+  activessl: true, // ¿Is ssl active?
   appDir: path.normalize(__dirname + '/../../'),
   httpp: 4000, // http port
   httpsp: 4001, // https port
@@ -20,7 +20,7 @@ module.exports = exports = {
   cookiesSecret: "-WNSScrt_123.::;109",
   data: {
     name: 'api', // Database name
-    host: '127.0.0.1',
+    host: '127.0.0.1', // Database host
     port: 27017,
     poolsize: 5,
     options: {}, // MongoDB options

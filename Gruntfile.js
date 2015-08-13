@@ -15,6 +15,21 @@ module.exports = function (grunt) {
   // Project configuration.
   grunt.initConfig({
 
+    config: {
+      httpp: 4000, // http port
+      httpsp: 4001, // https port
+      database: {
+        name: 'api',
+        host: '127.0.0.1'
+      },
+      createUser: 'no',
+      user: {
+        fullName: '',
+        email: '',
+        password: ''
+      }
+    },
+
     pkg: grunt.file.readJSON('package.json'),
 
     concurrent: {
@@ -53,6 +68,9 @@ module.exports = function (grunt) {
       },
       unit: {
         command: 'mocha -R spec --recursive test/unit',
+      },
+      createUser: {
+        command: 'node scripts/add-user.js -c "<%= config.createUser %>" -n "<%= config.user.fullName %>" -p "<%= config.user.password %>" -e "<%= config.user.email %>"'
       }
     },
 
@@ -66,9 +84,91 @@ module.exports = function (grunt) {
           cwd: __dirname
         }
       }
-    }
+    },
+
+    prompt: {
+      configure: {
+        options: {
+          questions: [{
+            config: 'config.database.name', // Database name
+            type: 'input', // list, checkbox, confirm, input, password
+            message: 'Write a name for MongoDB schema', // Question to ask the user, function needs to return a string,
+            default: 'api' // default value if nothing is entered
+          }, {
+            config: 'config.database.host', // Database host
+            type: 'input', // list, checkbox, confirm, input, password
+            message: 'MongoDB host', // Question to ask the user, function needs to return a string,
+            default: '127.0.0.1' // default value if nothing is entered
+          }, {
+            config: 'config.httpp', // API port
+            type: 'input', // list, checkbox, confirm, input, password
+            message: 'HTTP port', // Question to ask the user, function needs to return a string,
+            default: 4000 // default value if nothing is entered
+          }, {
+            config: 'config.httpsp', // API SSL port
+            type: 'input', // list, checkbox, confirm, input, password
+            message: 'HTTPS port', // Question to ask the user, function needs to return a string,
+            default: 4001 // default value if nothing is entered
+          }, {
+            config: 'config.createUser', // ¿Create admin user?
+            type: 'list', // list, checkbox, confirm, input, password
+            choices: ['yes', 'no'],
+            message: 'Insert first user in Database?', // Question to ask the user, function needs to return a string,
+            default: 'yes' // default value if nothing is entered
+          }, {
+            config: 'config.user.fullName', // Database host
+            type: 'input', // list, checkbox, confirm, input, password
+            message: 'Full name',
+            when: function (answers) {
+              return answers["config.createUser"] === 'yes';
+            }
+          }, {
+            config: 'config.user.email', // Database host
+            type: 'input', // list, checkbox, confirm, input, password
+            message: 'E-mail',
+            validate: function (value) {
+              var email = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+              return email.test(value);
+            },
+            when: function (answers) {
+              return answers["config.createUser"] === 'yes';
+            }
+          }, {
+            config: 'config.user.password', // Database host
+            type: 'password', // list, checkbox, confirm, input, password
+            message: 'Password',
+            when: function (answers) {
+              return answers["config.createUser"] === 'yes';
+            }
+          }]
+        }
+      },
+    },
+
+    replace: {
+      params: {
+        src: ['./src/config/params.js'], // source files array (supports minimatch)
+        overwrite: true,
+        replacements: [{
+          from: 'httpp: 4000, // http port', // string replacement
+          to: 'httpp: <%= config.httpp %>, // https port'
+        }, {
+          from: 'httpsp: 4001, // https port', // string replacement
+          to: 'httpsp: <%= config.httpsp %>, // https port'
+        }, {
+          from: 'name: \'api\', // Database name', // string replacement
+          to: 'name: \'<%= config.database.name %>\', // Database name'
+        }, {
+          from: 'host: \'127.0.0.1\', // Database host', // string replacement
+          to: 'host: \'<%= config.database.host %>\', // Database host'
+        }]
+      }
+    },
 
   });
+
+  // Install task
+  grunt.registerTask('configure', ['prompt:configure', 'replace:params', 'shell:createUser']);
 
   // Default task
   grunt.registerTask('default', ['external_daemon:mongodb', 'concurrent:dev']);

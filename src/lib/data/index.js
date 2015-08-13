@@ -43,7 +43,7 @@ module.exports = function (app, config, cb) {
       } else {
         conn = databaseConnection;
         module.exports.setIndexes();
-        cb && cb(null, databaseConnection);
+        cb && cb(null, module.exports);
       }
     });
 
@@ -55,6 +55,7 @@ module.exports = function (app, config, cb) {
  * Set indexes
  */
 module.exports.setIndexes = function (cb) {
+
   // Configure tokens collection expiration time index for token expiration 
   // http://docs.mongodb.org/manual/tutorial/expire-data/
   conn.collection(conf.tokenscollection, function (err, tokens) {
@@ -65,7 +66,7 @@ module.exports.setIndexes = function (cb) {
         expireAfterSeconds: conf.tokenexpiration
       }, function (err) {
         if (err) {
-          winston.error("[FATAL ERROR] Can't create tokens collection: %s", err);
+          winston.error("[FATAL ERROR] Can't create tokens collection: %s", err.toString());
         }
       });
     }
@@ -79,7 +80,7 @@ module.exports.setIndexes = function (cb) {
         expireAfterSeconds: conf.testuserexpiration
       }, function (err) {
         if (err) {
-          winston.error("[FATAL ERROR] Can't create users collection: %s", err);
+          winston.error("[FATAL ERROR] Can't create users collection: %s", err.toString());
         }
       });
     }

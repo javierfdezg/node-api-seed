@@ -12,6 +12,10 @@ Install the module dependencies with:
 `npm install`
 `sudo npm install -g mocha`
 
+Configure project for developing:
+
+`grunt configure`
+
 ## Running server and mongod
 
 Run  `grunt`
