@@ -19,7 +19,7 @@ var crypto = require('crypto');
 exports.sendResponse = function (req, res, status, obj) {
   if (!req.timedout) {
     if (obj !== undefined) {
-      res.jsonp((status) ? status : 200, obj);
+      res.status((status) ? status : 200).jsonp(obj);
     } else {
       res.status(status).end();
     }

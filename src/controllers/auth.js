@@ -10,7 +10,8 @@ var winston = require('winston'),
   fs = require('fs'),
   path = require('path'),
   util = require('../lib/util'),
-  data = require('../lib/data');
+  data = require('../lib/data'),
+  _ = require('underscore');
 
 /**
  * Creates and save a new bearer token for the current user
@@ -34,7 +35,8 @@ exports.token = function (req, res) {
           });
         } else {
           util.sendResponse(req, res, 200, {
-            'token': token
+            'token': tokenObject.token,
+            'user': _.omit(req.user, ['password', 'salt'])
           });
         }
       });

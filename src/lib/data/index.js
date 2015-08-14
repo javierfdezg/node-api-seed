@@ -224,8 +224,16 @@ module.exports.createToken = function (tkn, usr, cb) {
         token: tkn,
         created_at: new Date(),
         updated_at: new Date()
-      }, {}, function (err, tokenObject) {
-        cb && cb(err, tokenObject);
+      }, {
+        w: 1
+      }, function (err, tokenObject) {
+        if (err) {
+          cb && cb(err);
+        } else if (!tokenObject || tokenObject.length == 0) {
+          cb && cb('Unknown error');
+        } else {
+          cb && cb(err, tokenObject[0]);
+        }
       });
     } else {
       cb('You must provide a password');
