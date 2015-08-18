@@ -41,7 +41,7 @@ exports.execAction = function (controller, action, accessLevel) {
       if (ctrl[action] === undefined) throw "No action found";
       // Access gra nted
       if (util.allow(req.user, accessLevel)) {
-        ctrl.get(req, res, next);
+        ctrl[action](req, res, next);
       }
       // Unauthorized access
       else {
