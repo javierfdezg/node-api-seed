@@ -13,13 +13,13 @@ module.exports = exports = {
   clusterMode: true,
   activessl: true, // ¿Is ssl active?
   appDir: path.normalize(__dirname + '/../../'),
-  httpp: 4000, // http port
+  httpp: 4000, // https port
   httpsp: 4001, // https port
   sockettimeout: 20000, // idle socket timeout
   maxLag: 200, // Too Busy max lag (ms)
   cookiesSecret: "-WNSScrt_123.::;109",
   data: {
-    name: 'api', // Database name
+    name: 'ttrack', // Database name
     host: '127.0.0.1', // Database host
     port: 27017,
     poolsize: 5,
