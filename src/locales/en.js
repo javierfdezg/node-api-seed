@@ -4,5 +4,6 @@
   "%s cat": {
     "one": "%s cat",
     "other": "%s cats"
-  }
+  },
+  "Hello world": "Hello world"
 }

@@ -9,6 +9,7 @@
 var app = {},
   winston = require('winston'),
   config = require('../src/config/params'),
+  security = require('../src/lib/security'),
   commandLineArgs = require("command-line-args");
 
 var cli = commandLineArgs([{
@@ -34,6 +35,7 @@ var user = cli.parse();
 
 if (user.createUser === 'yes') {
   delete user["createUser"];
+  user.role = security.userRoles.admin;
   require('../src/lib/data')(app, config.data, function (err, data) {
     // No data connection available
     if (err) {

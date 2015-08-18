@@ -113,7 +113,7 @@ module.exports = function (grunt) {
             config: 'config.createUser', // ¿Create admin user?
             type: 'list', // list, checkbox, confirm, input, password
             choices: ['yes', 'no'],
-            message: 'Insert first user in Database?', // Question to ask the user, function needs to return a string,
+            message: 'Insert first admin user in Database?', // Question to ask the user, function needs to return a string,
             default: 'yes' // default value if nothing is entered
           }, {
             config: 'config.user.fullName', // Database host

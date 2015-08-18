@@ -6,7 +6,9 @@
 /*jslint node: true */
 "use strict";
 
-var crypto = require('crypto');
+var crypto = require('crypto'),
+  winston = require('winston'),
+  security = require('../security');
 
 /**
  * Wrapper for response.jsonp to avoid write responses when timeout has just happened
@@ -110,4 +112,11 @@ exports.randomToken = function (cb) {
       cb && cb(null, buf.toString('base64').replace(/\//g, '_').replace(/\+/g, '-'));
     }
   });
+};
+
+exports.allow = function (user, accessLevel) {
+  var al = (accessLevel !== undefined) ? accessLevel : security.accessLevels.public;
+  var role = (user && user.role !== undefined) ? user.role : security.userRoles.public;
+  winston.info("Role %s Access Level %s : %s", role, al, al & role);
+  return (al & role);
 };

@@ -82,7 +82,7 @@ module.exports = function (app, config) {
   // ----------------------------------------------------------------------
 
   // --------------------------- API ROUTES -------------------------------
-  require('./versionRouter')(app, config, router);
+  require('./apiRoutes')(app, config, router);
   // ----------------------------------------------------------------------
 
   // Add X-Response-Time header (response time) in every response

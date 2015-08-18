@@ -4,5 +4,7 @@
   "%s cat": {
     "one": "%s cat",
     "other": "%s cats"
-  }
+  },
+  "Unauthorized": "Unauthorized",
+  "Hello world": "Hola mundo"
 }
