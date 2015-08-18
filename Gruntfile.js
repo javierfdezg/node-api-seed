@@ -168,7 +168,7 @@ module.exports = function (grunt) {
   });
 
   // Install task
-  grunt.registerTask('configure', ['prompt:configure', 'replace:params', 'shell:createUser']);
+  grunt.registerTask('configure', ['prompt:configure', 'replace:params', 'external_daemon:mongodb', 'shell:createUser']);
 
   // Default task
   grunt.registerTask('default', ['external_daemon:mongodb', 'concurrent:dev']);
