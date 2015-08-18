@@ -5,5 +5,6 @@
     "one": "%s cat",
     "other": "%s cats"
   },
-  "Hello world": "Hello world"
+  "Unauthorized": "Unauthorized",
+  "Hello %s!!": "Hello %s!!"
 }

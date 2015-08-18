@@ -6,5 +6,5 @@
     "other": "%s cats"
   },
   "Unauthorized": "Unauthorized",
-  "Hello world": "Hello world"
+  "Hello %s!!": "Hello %s!!"
 }

@@ -19,6 +19,6 @@ var winston = require('winston'),
  */
 exports.get = function (req, res) {
   util.sendResponse(req, res, 200, {
-    message: req.i18n.__('Hello world')
+    message: req.i18n.__('Hello %s!!', req.user.fullName)
   });
 };
