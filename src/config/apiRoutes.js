@@ -22,7 +22,7 @@ module.exports = function (app, config, router) {
 
   // ------------------------- ROUTES -------------------------------------
   // Tasks
-  router.get('/tasks/:id', timeout(2000), exports.execAction('hello', 'get', security.accessLevels.loggedin));
+  router.get('/hello', timeout(2000), exports.execAction('hello', 'get', security.accessLevels.loggedin));
   // ----------------------------------------------------------------------
 
 };
