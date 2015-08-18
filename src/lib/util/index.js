@@ -117,6 +117,5 @@ exports.randomToken = function (cb) {
 exports.allow = function (user, accessLevel) {
   var al = (accessLevel !== undefined) ? accessLevel : security.accessLevels.public;
   var role = (user && user.role !== undefined) ? user.role : security.userRoles.public;
-  winston.info("Role %s Access Level %s : %s", role, al, al & role);
   return (al & role);
 };
