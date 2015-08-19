@@ -40,15 +40,24 @@ module.exports = function (app, config, cb) {
     db.open(function (error, databaseConnection) {
       if (error) {
         cb && cb(error);
+      } else if (config.user && config.password) {
+        // Authenticate
+        db.authenticate(config.user, config.password, function (err, result) {
+          if (err || !result) {
+            cb && cb('MongoDB Authentication failed: ' + err);
+          } else {
+            conn = databaseConnection;
+            module.exports.setIndexes();
+            cb && cb(null, module.exports);
+          }
+        });
       } else {
         conn = databaseConnection;
         module.exports.setIndexes();
         cb && cb(null, module.exports);
       }
     });
-
   }
-
 };
 
 /**
