@@ -187,7 +187,7 @@ module.exports.createUser = function (usr, cb) {
     } else if (usr.password) {
       module.exports.searchUserByEmail(usr.email, function (err, userExists) {
         if (err) {
-          cb('Error searching user by email');
+          cb('Error searching user by email ' + err.toString());
         } else if (userExists) {
           cb('Email already exists', userExists);
         } else {
