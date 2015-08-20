@@ -1,0 +1,23 @@
+#/usr/bin/env bash
+# MIT © Sindre Sorhus - sindresorhus.com
+
+# Check for changes in this repo
+changed_files="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
+
+check_run() {
+	echo "$changed_files" | grep "$1" && eval "$2"
+}
+
+check_run package.json "npm install"
+check_run bower.json "bower install"
+
+WATCHED_MODULES=""
+for module in $WATCHED_MODULES; do
+  echo "Updating module $module"
+  cd $module; 
+  echo "  Pulling the repo"
+  git pull 
+  cd ..
+  echo ""
+done
+
