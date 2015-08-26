@@ -88,7 +88,6 @@ if (cluster.isMaster && config.clusterMode) {
       httpServer.on('connection', function (socket) {
         socket.setTimeout(config.sockettimeout, function () {
           socket.destroy();
-          winston.verbose("HTTP socket destroyed after %d milliseconds", config.sockettimeout);
         });
       });
 
