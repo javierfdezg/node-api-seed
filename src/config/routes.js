@@ -17,6 +17,7 @@ var util = require('../lib/util');
 var bodyParser = require('body-parser');
 var I18n = require('i18n-2');
 var i18nm = require('../middleware/i18n');
+var configMiddleware = require('../middleware/config');
 var path = require('path');
 
 module.exports = function (app, config) {
@@ -60,6 +61,11 @@ module.exports = function (app, config) {
   router.use(bodyParser.json());
   authenticateRouter.use(bodyParser.json());
   testRouter.use(bodyParser.json());
+
+  // Config
+  router.use(configMiddleware(config));
+  authenticateRouter.use(configMiddleware(config));
+  testRouter.use(configMiddleware(config));
 
   // I18N
   router.use(i18nm);
