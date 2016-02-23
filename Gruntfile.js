@@ -156,7 +156,7 @@ module.exports = function (grunt) {
           from: 'httpsp: 4001, // https port', // string replacement
           to: 'httpsp: <%= config.httpsp %>, // https port'
         }, {
-          from: 'name: \'api\', // Database name', // string replacement
+          from: 'name: \'nodeapiseed\', // Database name', // string replacement
           to: 'name: \'<%= config.database.name %>\', // Database name'
         }, {
           from: 'host: \'127.0.0.1\', // Database host', // string replacement
