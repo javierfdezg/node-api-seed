@@ -12,9 +12,7 @@ var app, winston = require('winston'),
   envConfig = require('node-env-configuration'),
   defaults = require('./config/params'),
   config = envConfig(defaults.appName, defaults),
-  toobusy = require('toobusy').maxLag(config.maxLag),
   fs = require('fs'),
-  memwatch = require('memwatch'),
   cluster = require('cluster');
 
 var cpuCount = 1;
@@ -108,11 +106,6 @@ if (cluster.isMaster && config.clusterMode) {
 process.on('uncaughtException', function (err) {
   // handle the error safely
   winston.error('Uncaught Exception. Stack trace:\n%s', err.stack);
-});
-
-// posible memory leak 
-memwatch.on('leak', function (info) {
-  winston.warn('Posible memory leak:\n%s', info);
 });
 
 module.exports = app;
