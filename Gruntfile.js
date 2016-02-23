@@ -64,10 +64,10 @@ module.exports = function (grunt) {
         }
       },
       functional: {
-        command: 'mocha -R spec --recursive test/functional',
+        command: 'mocha --opts test/mocha.opts test/functional',
       },
       unit: {
-        command: 'mocha -R spec --recursive test/unit',
+        command: 'mocha --opts test/mocha.opts test/unit',
       },
       createUser: {
         command: 'node scripts/add-user.js -c "<%= config.createUser %>" -n "<%= config.user.fullName %>" -p "<%= config.user.password %>" -e "<%= config.user.email %>"'
@@ -162,13 +162,21 @@ module.exports = function (grunt) {
           from: 'host: \'127.0.0.1\', // Database host', // string replacement
           to: 'host: \'<%= config.database.host %>\', // Database host'
         }]
+      },
+      testendpoint: {
+        src: ['./test/globals.js'], // global for testing
+        overwrite: true,
+        replacements: [{
+          from: 'global.api = supertest(\'http://127.0.0.1:4000\');', // api end-point
+          to: 'global.api = supertest(\'http://127.0.0.1:<%= config.httpp %>\');'
+        }]
       }
     },
 
   });
 
   // Install task
-  grunt.registerTask('configure', ['prompt:configure', 'replace:params', 'external_daemon:mongodb', 'shell:createUser']);
+  grunt.registerTask('configure', ['prompt:configure', 'replace:params', 'replace:testendpoint', 'external_daemon:mongodb', 'shell:createUser']);
 
   // Default task
   grunt.registerTask('default', ['external_daemon:mongodb', 'concurrent:dev']);

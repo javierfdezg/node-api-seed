@@ -6,6 +6,7 @@
 /*jslint node: true */
 "use strict";
 var winston = require('winston'),
+  toobusy = require('toobusy-js'),
   path = require('path');
 
 module.exports = function (app, config) {
@@ -57,7 +58,7 @@ var shutdown = function (signal) {
 
   // free resources
   try {
-
+    toobusy.shutdown();
   } catch (e) {
     winston.error("Error closing data wrapper: %s", e.toString());
   }

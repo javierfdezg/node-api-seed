@@ -9,7 +9,7 @@
 var express = require('express');
 var winston = require('winston');
 var timeout = require('connect-timeout');
-var toobusy = require('toobusy');
+var toobusy = require('toobusy-js');
 var responseTime = require('response-time');
 var cors = require('cors');
 var cookieParser = require('cookie-parser');
@@ -114,7 +114,8 @@ module.exports = function (app, config) {
   // Use this before each middleware
   app.use(haltOnTimedout);
 
-  // Use this router for any request from root path
+  // Set maximum lag and configure toobusy middleware
+  toobusy.maxLag(config.maxLag);
   app.use(function (req, res, next) {
     // check if we're toobusy()
     if (toobusy()) {

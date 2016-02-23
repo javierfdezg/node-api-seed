@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Why Not Soluciones, S.L.
+ * Copyright (c) Why Not Soluciones, S.L.
  * Licensed under the Copyright license.
  */
 
