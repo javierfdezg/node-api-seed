@@ -19,7 +19,7 @@ module.exports = exports = {
   maxLag: 200, // Too Busy max lag (ms)
   cookiesSecret: "-WNSScrt_123.::;109",
   data: {
-    name: 'ttrack', // Database name
+    name: 'nodeapiseed', // Database name
     host: '127.0.0.1', // Database host
     user: '', // Database user
     password: '', // Database password
