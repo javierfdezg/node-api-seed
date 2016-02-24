@@ -4,6 +4,8 @@ MAINTAINER Javier Fernández <jfernandez@whynotsoluciones.com>
 
 ENV TERM dumb
 
+RUN echo 'NODE-API-SEED' > /etc/hostname
+
 # Install pre-reqs
 RUN   \
   npm install -g mocha
