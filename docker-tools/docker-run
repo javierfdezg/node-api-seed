@@ -1,0 +1,31 @@
+#!/bin/bash
+eval "$(docker-machine env default)"
+
+source .frameworkconfig
+
+# Check if container exists
+docker ps | if grep --silent shark
+then
+  echo "Container already running. Use connect command."
+  exit 1
+else
+
+  docker ps -a | if grep --silent shark
+  then
+    echo "Using existing container."
+    docker start -i -a shark
+  else
+    # Create container
+    echo -n "Container not found: creating new and running. "
+    docker run                          \
+        -p $apiPort:4000                      \
+        -p 27017:27017                        \
+        -v $srcDir:/usr/src                   \
+        --name="shark"                        \
+        whynotsoluciones/node-argon:latest    \
+        npm run start
+    echo "Container stopped. Bye!"
+  fi
+
+fi
+

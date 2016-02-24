@@ -1,0 +1,7 @@
+#!/bin/bash
+eval "$(docker-machine env default)"
+
+docker pull whynotsoluciones/node-argon:latest
+
+echo "Docker image updated"
+
