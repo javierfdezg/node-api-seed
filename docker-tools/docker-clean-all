@@ -1,9 +1,15 @@
 #!/bin/bash
+eval "$(docker-machine env default)"
 
-# TODO: ask for confirmation
-
-# Delete all containers
-docker rm $(docker ps -a -q)
-# Delete all images
-docker rmi $(docker images -q)
-
+case $1 in
+  image)
+    docker rmi whynotsoluciones/node-argon:latest
+    ;;
+  container)
+    docker rm shark
+    ;;
+  *)
+    docker rm shark
+    docker rmi whynotsoluciones/node-argon:latest
+    ;;
+esac

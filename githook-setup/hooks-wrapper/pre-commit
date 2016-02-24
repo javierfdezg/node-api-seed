@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 ask() {
     # http://djm.me/ask
     while true; do
@@ -33,12 +32,7 @@ ask() {
     done
 }
 
-SRC_PATTERN="package.json"
-git diff --cached --name-only | if grep --quiet "$SRC_PATTERN"
-then
-  if ask "Did you installed new packages via npm? Want to upgrade the Docker image?" Y; then
-    ./docker-tools/docker-image-upgrade
-  else
+warning() {
     echo
     echo "WARNING, PLEASE READ"
     echo
@@ -48,5 +42,26 @@ then
     echo
     echo "If you changed your mind, execute the docker-image-upgrade tool"
     echo
+}
+
+SRC_PATTERN="package.json"
+git diff --cached --name-only | if grep --quiet "$SRC_PATTERN"
+then
+  if ask "Did you installed new packages via npm? Want to upgrade the Docker image?" Y; then
+    ./docker-tools/docker-image-upgrade
+    exit 0
+  else
+    warning
+  fi
+fi
+
+SRC_PATTERN="Dockerfile"
+git diff --cached --name-only | if grep --quiet "$SRC_PATTERN"
+then
+  if ask "Did you modify the Dockerfile? Want to upgrade the Docker image?" Y; then
+    ./docker-tools/docker-image-upgrade
+    exit 0
+  else
+    warning
   fi
 fi

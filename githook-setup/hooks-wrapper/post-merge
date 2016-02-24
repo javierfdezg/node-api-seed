@@ -1,23 +1,18 @@
-#/usr/bin/env bash
-# MIT © Sindre Sorhus - sindresorhus.com
+#/bin/bash
 
 # Check for changes in this repo
 changed_files="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
 
 check_run() {
-	echo "$changed_files" | grep "$1" && eval "$2"
+	echo "$changed_files" | if grep --quiet "$1"
+  then 
+    echo "---------------------------"
+    echo "Change detected: $1"
+    eval "$2"
+    echo "---------------------------"
+  fi
 }
 
-check_run package.json "npm install"
-check_run bower.json "bower install"
-
-WATCHED_MODULES=""
-for module in $WATCHED_MODULES; do
-  echo "Updating module $module"
-  cd $module; 
-  echo "  Pulling the repo"
-  git pull 
-  cd ..
-  echo ""
-done
-
+check_run githook-setup "./githook-setup/setup.sh"
+check_run .dockerimages "./docker-tools/docker-update-system"
+check_run package.json "./docker-tools/docker-clean-all container"

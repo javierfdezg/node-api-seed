@@ -1,15 +1,20 @@
 #!/bin/bash
+eval "$(docker-machine env default)"
+
+./docker-tools/docker-stop
+./docker-tools/docker-clean-all image
+./docker-tools/docker-clean-all container
 
 # Create/upgrade the image
-#docker build -t whynotsoluciones/node-argon .
+docker build -t whynotsoluciones/node-argon .
 
 # Push it to docker hub
-#docker push whynotsoluciones/node-argon
+docker push whynotsoluciones/node-argon
 
 # Note the name of the image and the latest ID to notify other users
 REPO="whynotsoluciones"
 IMAGE="node-argon"
 TAG="latest"
 
-sed -i -e 's/.*${REPO}.*${IMAGE}.*${TAG}.*/"${REPO}\/${IMAGE}:${TAG}|$(date +%s)"/' `pwd`/.dockerimages
+sed -i '' -e "s/.*${REPO}.*${IMAGE}.*${TAG}.*/${REPO}\/${IMAGE}:${TAG}|$(date +%s)/" `pwd`/.dockerimages
 

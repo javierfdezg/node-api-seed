@@ -1,5 +1,0 @@
-docker run -i -t --rm                     \
-      -p 4000:4000                        \
-      -v `pwd`/api:/usr/src/app               \
-      --name="shark"                      \
-      whynotsoluciones/node-argon:latest
