@@ -46,6 +46,7 @@ module.exports = function (grunt) {
       mongodb: {
         options: {
           verbose: false,
+          startCheckTimeout: false,
           startCheck: function (stdout, stderr) {
             return /waiting for connections/.test(stdout);
           }
