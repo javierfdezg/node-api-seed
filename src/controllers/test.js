@@ -10,7 +10,7 @@ var winston = require('winston'),
   fs = require('fs'),
   path = require('path'),
   util = require('../lib/util'),
-  data = require('../lib/data');
+  Users = require('../lib/data').models.Users;
 
 /**
  * Used to test timeout condition in a request with no response
@@ -113,18 +113,13 @@ exports.testProtected = function (req, res) {
 exports.testCreateUser = function (req, res) {
   var user = req.body;
   user.delete_from = new Date(); // Set expiration (test users can be deleted)
-  data.createUser(user, function (err, usr) {
-    if (err && usr) {
-      util.sendResponse(req, res, 400, {
-        error: err
-      });
-    } else if (err) {
-      winston.error("[API TEST ERROR] %s", err);
-      util.sendResponse(req, res, 500, {
-        error: 'Error creating user'
+  Users.create(user, function (err, usr) {
+    if (err) {
+      util.sendResponse(req, res, err.status, {
+        error: req.i18n.__(err.key)
       });
     } else {
-      util.sendResponse(req, res, 200, usr);
+      util.sendResponse(req, res, 201, usr);
     }
   })
 

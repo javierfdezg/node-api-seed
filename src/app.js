@@ -60,7 +60,7 @@ if (cluster.isMaster && config.clusterMode) {
       winston.error(err.toString());
     } else {
 
-      winston.info("Mongo connection established")
+      winston.info("Mongo connection established");
 
       // ==============================================================
       // Routes for API & static resources middleware config.

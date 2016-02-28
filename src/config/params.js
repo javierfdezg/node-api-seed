@@ -10,7 +10,7 @@ var path = require('path');
 
 module.exports = exports = {
   appName: 'seed-node-api',
-  clusterMode: true,
+  clusterMode: false,
   activessl: true, // ¿Is ssl active?
   appDir: path.normalize(__dirname + '/../../'),
   httpp: 4000, // https port
@@ -26,8 +26,6 @@ module.exports = exports = {
     port: 27017,
     poolsize: 5,
     options: {}, // MongoDB options
-    userscollection: 'users', // Collection for users
-    tokenscollection: 'tokens', // Collection for bearer tokens
     tokenexpiration: 60 * 60 * 24 * 30, // Token expiration time in seconds
     testuserexpiration: 60 // Test user expiration time in seconds
   },

@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2014 Why Not Soluciones, S.L.
- * Licensed under the Copyright license.
+ * Copyright (c) Why Not Soluciones, S.L.
  */
 
 /*jslint node: true */
@@ -8,16 +7,21 @@
 
 var Db = require('mongodb').Db,
   Connection = require('mongodb').Connection,
-  Server = require('mongodb').Server,
+  MongoClient = require('mongodb').MongoClient,
   ObjectId = require('mongodb').ObjectID,
   winston = require('winston'),
+  fs = require('fs'),
   util = require('../util');
 
 // MongoDB connection instance
 var conn;
 var conf;
+var models = {};
 
 module.exports = function (app, config, cb) {
+
+  var url;
+  var authentication = '';
 
   // save config options
   if (config) {
@@ -30,108 +34,62 @@ module.exports = function (app, config, cb) {
   }
   // No connection established
   else {
-    // try to connect to the database
-    var db = new Db(config.name, new Server(config.host,
-      config.port || Connection.DEFAULT_PORT, {
-        auto_reconnect: true,
-        poolSize: config.poolsize
-      }), config.options);
-    // Open connection
-    db.open(function (error, databaseConnection) {
+    // If MongoDB connection requires authentication
+    if (config.user && config.password) {
+      authentication = config.user + ':' + config.password + '@';
+    }
+    url = 'mongodb://' + authentication + config.host + ':' + config.port + '/' + config.name;
+    MongoClient.connect(url, {
+      db: config.options,
+      server: {
+        poolSize: config.poolsize,
+        socketOptions: {
+          autoReconnect: true
+        }
+      }
+    }, function (error, databaseConnection) {
       if (error) {
         cb && cb(error);
-      } else if (config.user && config.password) {
-        // Authenticate
-        db.authenticate(config.user, config.password, function (err, result) {
-          if (err || !result) {
-            cb && cb('MongoDB Authentication failed: ' + err);
-          } else {
-            conn = databaseConnection;
-            module.exports.setIndexes();
-            cb && cb(null, module.exports);
-          }
-        });
       } else {
         conn = databaseConnection;
-        module.exports.setIndexes();
-        cb && cb(null, module.exports);
+        initialize(config, cb);
       }
     });
   }
 };
 
 /**
- * Set indexes
- */
-module.exports.setIndexes = function (cb) {
-
-  // Configure tokens collection expiration time index for token expiration 
-  // http://docs.mongodb.org/manual/tutorial/expire-data/
-  conn.collection(conf.tokenscollection, function (err, tokens) {
-    if (err) {
-      cb && cb(err);
-    } else {
-      tokens.ensureIndex('updated_at', {
-        expireAfterSeconds: conf.tokenexpiration
-      }, function (err) {
-        if (err) {
-          winston.error("[FATAL ERROR] Can't create tokens collection: %s", err.toString());
-        }
-      });
-    }
-  });
-
-  conn.collection(conf.userscollection, function (err, tokens) {
-    if (err) {
-      cb && cb(err);
-    } else {
-      tokens.ensureIndex('delete_from', {
-        expireAfterSeconds: conf.testuserexpiration
-      }, function (err) {
-        if (err) {
-          winston.error("[FATAL ERROR] Can't create users collection: %s", err.toString());
-        }
-      });
-    }
-  });
-
-};
-
-/**
- * Search for valid token, and then search and return the owner of that token.
- * Update validity of the found token
- * @param  {[type]} tk [description]
+ * Init mongoDB indexes and Models found under 'models' directory
  * @param  {Function} cb [description]
- * @return {[type]} [description]
+ * @return {[type]}      [description]
  */
-module.exports.searchUserByBearerToken = function (tk, cb) {
+function initialize(config, cb) {
+  var stat, modelsList, model, i;
+  var Model, collectionName, className;
 
-  conn.collection(conf.tokenscollection, function (err, tokensCollection) {
-    if (err) {
-      cb(err);
-    } else {
-      tokensCollection.findAndModify({
-        token: tk
-      }, [], {
-        $set: {
-          updated_at: new Date(), // Increment time
-        }
-      }, {
-        w: 1,
-        new: false
-      }, function (err, tokenObject) {
-        if (err) {
-          cb && cb(err);
-        } else if (tokenObject) {
-          // Get user
-          module.exports.searchUserById(tokenObject.user, cb);
-        } else {
-          cb && cb(null, null);
-        }
-      });
+  // Get all models and init them
+  modelsList = fs.readdirSync(__dirname + '/models');
+  for (i = 0; i < modelsList.length; i++) {
+    stat = fs.statSync(__dirname + '/models/' + modelsList[i]);
+    if (stat.isFile()) {
+      // Create and export model
+      Model = require('./models/' + modelsList[i]);
+      collectionName = (Model.collectionName !== undefined) ? Model.collectionName : util.fileToCollectionName(modelsList[i]);
+      model = new Model({
+        connection: conn,
+        collectionName: collectionName
+      }, config);
+      // Export model with the Class Name
+      className = util.collectionToClassName(collectionName);
+      models[className] = model;
+      winston.info("Initializing '%s' model for '%s' collection", className, collectionName);
     }
-  });
+  }
 
+  winston.info("MODELS: %s", JSON.stringify(Object.keys(models)));
+
+  // Callback
+  cb && cb(null, module.exports);
 };
 
 /**
@@ -147,26 +105,6 @@ module.exports.searchUserById = function (id, cb) {
     } else {
       usersCollection.findOne({
         _id: ObjectId(id)
-      }, function (err, userObject) {
-        cb && cb(err, userObject);
-      });
-    }
-  });
-};
-
-/**
- * Search user by email
- * @param  {[type]}   em [description]
- * @param  {Function} cb [description]
- * @return {[type]}      [description]
- */
-module.exports.searchUserByEmail = function (em, cb) {
-  conn.collection(conf.userscollection, function (err, usersCollection) {
-    if (err) {
-      cb(err);
-    } else {
-      usersCollection.findOne({
-        email: em
       }, function (err, userObject) {
         cb && cb(err, userObject);
       });
@@ -580,3 +518,5 @@ module.exports.aggregate = function (query, collectionName, cb) {
     }
   });
 };
+
+module.exports.models = models;

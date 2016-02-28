@@ -78,10 +78,12 @@ module.exports = function (grunt) {
       dev: {
         script: 'src/app.js',
         options: {
+          cwd: __dirname,
           ignore: ['README.md'],
           watch: ['src'],
-          delayTime: 1,
-          cwd: __dirname
+          ext: 'js',
+          delay: 1000,
+          legacyWatch: true
         }
       }
     },

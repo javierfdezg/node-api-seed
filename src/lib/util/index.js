@@ -8,7 +8,8 @@
 
 var crypto = require('crypto'),
   winston = require('winston'),
-  security = require('../security');
+  security = require('../security'),
+  changeCase = require('change-case');
 
 /**
  * Wrapper for response.jsonp to avoid write responses when timeout has just happened
@@ -114,8 +115,42 @@ exports.randomToken = function (cb) {
   });
 };
 
+/**
+ * Has user this access level?
+ * @param  {[type]} user        [description]
+ * @param  {[type]} accessLevel [description]
+ * @return {[type]}             [description]
+ */
 exports.allow = function (user, accessLevel) {
   var al = (accessLevel !== undefined) ? accessLevel : security.accessLevels.public;
   var role = (user && user.role !== undefined) ? user.role : security.userRoles.public;
   return (al & role);
+};
+
+/**
+ * Remove last part in string based on delimiter. For example, it can remove extension from a file name
+ * @param  {[type]} str       [description]
+ * @param  {[type]} delimiter [description]
+ * @return {[type]}           [description]
+ */
+exports.beforeLastIndex = function (str, delimiter) {
+  return str.split(delimiter).slice(0, -1).join(delimiter) || str + "";
+};
+
+/**
+ * Given a file name, returns its corresponding Collection Name
+ * @param  {[type]} fileName [description]
+ * @return {[type]}          [description]
+ */
+exports.fileToCollectionName = function (fileName) {
+  return changeCase.snakeCase(module.exports.beforeLastIndex(fileName, '.'));
+};
+
+/**
+ * Given a collection name, returns its corresponding class Name
+ * @param  {[type]} collectionName [description]
+ * @return {[type]}                [description]
+ */
+exports.collectionToClassName = function (collectionName) {
+  return changeCase.pascalCase(collectionName);
 };
