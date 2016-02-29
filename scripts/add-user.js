@@ -37,12 +37,13 @@ if (user.createUser === 'yes') {
   delete user["createUser"];
   user.role = security.userRoles.admin;
   require('../src/lib/data')(app, config.data, function (err, data) {
+    var Users = require('../src/lib/data').Users;
     // No data connection available
     if (err) {
       winston.error(err.toString());
     } else {
       winston.info("Mongo connection established");
-      data.createUser(user, function (err) {
+      Users.create(user, function (err) {
         if (err) {
           winston.error(err);
           process.exit(1);

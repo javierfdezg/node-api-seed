@@ -133,7 +133,7 @@ exports.testCreateUser = function (req, res) {
  */
 exports.testLongTime = function (req, res) {
   setTimeout(function () {
-    var img = fs.readFileSync(path.normalize(__dirname + '../../web/development/img/futurama.png'));
+    var img = fs.readFileSync(path.normalize(__dirname + '/../../web/development/img/futurama.png'));
     res.writeHead(200, {
       'Content-Type': 'image/png'
     });
