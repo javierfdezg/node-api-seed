@@ -1,0 +1,7 @@
+#!/bin/bash
+eval "$(docker-machine env default)"
+
+echo -n "Creating docker machine with name $1..."
+docker-machine create --driver virtualbox $1
+echo "done"
+

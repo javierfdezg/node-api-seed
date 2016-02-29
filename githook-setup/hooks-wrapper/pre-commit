@@ -1,0 +1,67 @@
+#!/bin/sh
+
+ask() {
+    # http://djm.me/ask
+    while true; do
+
+        if [ "${2:-}" = "Y" ]; then
+            prompt="Y/n"
+            default=Y
+        elif [ "${2:-}" = "N" ]; then
+            prompt="y/N"
+            default=N
+        else
+            prompt="y/n"
+            default=
+        fi
+
+        # Ask the question - use /dev/tty in case stdin is redirected from somewhere else
+        read -p "$1 [$prompt] " REPLY </dev/tty
+
+        # Default?
+        if [ -z "$REPLY" ]; then
+            REPLY=$default
+        fi
+
+        # Check if the reply is valid
+        case "$REPLY" in
+            Y*|y*) return 0 ;;
+            N*|n*) return 1 ;;
+        esac
+
+    done
+}
+
+warning() {
+    echo
+    echo "WARNING, PLEASE READ"
+    echo
+    echo "The only way to share the new package with your colleages is "
+    echo "to build a new Docker image and push it to Dockerhub. Then "
+    echo "let them know ...".
+    echo
+    echo "If you changed your mind, execute the docker-image-upgrade tool"
+    echo
+}
+
+SRC_PATTERN="package.json"
+git diff --cached --name-only | if grep --quiet "$SRC_PATTERN"
+then
+  if ask "Did you installed new packages via npm? Want to upgrade the Docker image?" Y; then
+    ./docker-tools/docker-image-upgrade
+    exit 0
+  else
+    warning
+  fi
+fi
+
+SRC_PATTERN="Dockerfile"
+git diff --cached --name-only | if grep --quiet "$SRC_PATTERN"
+then
+  if ask "Did you modify the Dockerfile? Want to upgrade the Docker image?" Y; then
+    ./docker-tools/docker-image-upgrade
+    exit 0
+  else
+    warning
+  fi
+fi

@@ -7,6 +7,7 @@ SETUP_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 WATCHED_MODULES=""
 REPO_HOOKS="$SETUP_DIR/hooks-wrapper"
 
+echo -n "Updating githook-setup... "
 # If this repo is not a submodule...
 if [ -d .git ]; then
 
@@ -73,3 +74,4 @@ if [ -d .git ]; then
     done
   done
 fi
+echo "done"

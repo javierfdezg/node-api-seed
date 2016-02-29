@@ -1,0 +1,15 @@
+#!/bin/bash
+eval "$(docker-machine env default)"
+
+case $1 in
+  image)
+    docker rmi whynotsoluciones/node-argon:latest
+    ;;
+  container)
+    docker rm shark
+    ;;
+  *)
+    docker rm shark
+    docker rmi whynotsoluciones/node-argon:latest
+    ;;
+esac
