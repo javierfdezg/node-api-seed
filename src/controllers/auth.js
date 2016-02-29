@@ -10,7 +10,7 @@ var winston = require('winston'),
   fs = require('fs'),
   path = require('path'),
   util = require('../lib/util'),
-  data = require('../lib/data'),
+  Tokens = require('../lib/data').Tokens,
   _ = require('underscore');
 
 /**
@@ -28,7 +28,7 @@ exports.token = function (req, res) {
         error: 'Error generating access token'
       });
     } else {
-      data.createToken(token, req.user, function (err, tokenObject) {
+      Tokens.createToken(token, req.user, function (err, tokenObject) {
         if (err) {
           util.sendResponse(req, res, 500, {
             error: 'Error saving access token'

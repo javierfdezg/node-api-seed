@@ -81,12 +81,10 @@ function initialize(config, cb) {
       }, config);
       // Export model with the Class Name
       className = util.collectionToClassName(collectionName);
-      models[className] = model;
+      module.exports[className] = model;
       winston.info("Initializing '%s' model for '%s' collection", className, collectionName);
     }
   }
-
-  winston.info("MODELS: %s", JSON.stringify(Object.keys(models)));
 
   // Callback
   cb && cb(null, module.exports);
@@ -145,41 +143,6 @@ module.exports.createUser = function (usr, cb) {
               });
             }
           });
-        }
-      });
-    } else {
-      cb('You must provide a password');
-    }
-  });
-};
-
-/**
- * Associte a given token to the user
- * @param  {[type]}   tkn [description]
- * @param  {[type]}   usr   [description]
- * @param  {Function} cb    [description]
- * @return {[type]}         [description]
- */
-module.exports.createToken = function (tkn, usr, cb) {
-  conn.collection(conf.tokenscollection, function (err, tokenscollection) {
-    if (err) {
-      cb(err);
-    } else if (usr) {
-      // Save the token
-      tokenscollection.insert({
-        user: usr._id,
-        token: tkn,
-        created_at: new Date(),
-        updated_at: new Date()
-      }, {
-        w: 1
-      }, function (err, tokenObject) {
-        if (err) {
-          cb && cb(err);
-        } else if (!tokenObject || tokenObject.length == 0) {
-          cb && cb('Unknown error');
-        } else {
-          cb && cb(err, tokenObject[0]);
         }
       });
     } else {
@@ -519,4 +482,4 @@ module.exports.aggregate = function (query, collectionName, cb) {
   });
 };
 
-module.exports.models = models;
+//module.exports.models = models;

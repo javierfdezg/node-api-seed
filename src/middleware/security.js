@@ -8,7 +8,7 @@
 
 var winston = require('winston'),
   util = require('../lib/util'),
-  User = require('../lib/data').User;
+  Users = require('../lib/data').Users;
 
 /**
  * Bearer token middleware
@@ -30,7 +30,7 @@ module.exports.bearer = function (req, res, next) {
       if (/^Bearer$/i.test(scheme)) {
         token = credentials;
         // Search for token in database
-        User.searchUserByBearerToken(token, function (err, user) {
+        Users.searchByBearerToken(token, function (err, user) {
           if (err) {
             winston.error("[API 500 ERROR] Error searching for bearer token %s: %s ", token, err);
             util.sendResponse(req, res, 500, {
@@ -100,7 +100,7 @@ module.exports.userPassword = function (req, res, next) {
         password = parts[1];
 
         // Search for user in database
-        User.getByEmail(user, function (err, usr) {
+        Users.getByEmail(user, function (err, usr) {
           if (err) {
             winston.error("[API 500 ERROR] Error searching for user %s: %s ", user, err);
             util.sendResponse(req, res, 500, {

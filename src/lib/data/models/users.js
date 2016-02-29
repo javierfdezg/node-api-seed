@@ -7,8 +7,11 @@
 "use strict";
 
 var BaseModel = require('../base-model'),
+  util = require('../../util'),
   inherits = require('util').inherits,
-  winston = require('winston');
+  winston = require('winston'),
+  ObjectId = require('mongodb').ObjectID,
+  Tokens = require('../').Tokens;
 
 var Users = module.exports = function (options, conf) {
 
@@ -24,6 +27,7 @@ var Users = module.exports = function (options, conf) {
   BaseModel.apply(this, arguments);
 };
 
+//Users.prototype.constructor = Users;
 module.exports.collectionName = 'users';
 inherits(Users, BaseModel);
 
@@ -34,10 +38,11 @@ inherits(Users, BaseModel);
  * @return {[type]}       [description]
  */
 Users.prototype.create = function (usr, cb) {
+  var self = this;
   if (usr.password) {
-    this.getByEmail(usr.email, function (err, userExists) {
+    self.getByEmail(usr.email, function (err, userExists) {
       if (err) {
-        winston.error('Error searching for %s in database (User.create)', usr.email);
+        winston.error('Error searching for %s in database (User.create): %s', usr.email, err.message);
         cb({
           key: 'Error searching for this email in Database',
           status: 500
@@ -62,7 +67,7 @@ Users.prototype.create = function (usr, cb) {
             usr.password = opts.key;
             usr.salt = opts.salt;
             // Insert new user in collection
-            this.insert(usr, {
+            self.insert(usr, {
               w: 1
             }, function (err, userObject) {
               cb && cb(err, userObject);
@@ -87,35 +92,35 @@ Users.prototype.create = function (usr, cb) {
  * @return {[type]} [description]
  */
 Users.prototype.searchByBearerToken = function (tk, cb) {
-  conn.collection(conf.tokenscollection, function (err, tokensCollection) {
+  var self = this;
+  // Find token and modify updated_at field with current time
+  Tokens.findOneAndUpdate({
+    token: tk
+  }, {
+    $set: {
+      updated_at: new Date(), // Increment time
+    }
+  }, {
+    'upsert': false,
+    'new': true
+  }, function (err, tokenObject) {
     if (err) {
-      cb(err);
-    } else {
-      tokensCollection.findAndModify({
-        token: tk
-      }, [], {
-        $set: {
-          updated_at: new Date(), // Increment time
-        }
-      }, {
-        w: 1,
-        new: false
-      }, function (err, tokenObject) {
-        if (err) {
-          cb && cb(err);
-        } else if (tokenObject) {
-          // Get user
-          module.exports.searchUserById(tokenObject.user, cb);
-        } else {
-          cb && cb(null, null);
-        }
+      cb && cb(err);
+    } else if (tokenObject && tokenObject.value) {
+      // Get user with id stored in token's record
+      self.findOne({
+        _id: ObjectId(tokenObject.value.user)
+      }, function (err, userObject) {
+        cb && cb(err, userObject);
       });
+    } else {
+      cb && cb(null, null);
     }
   });
 };
 
 Users.prototype.getByEmail = function (email, cb) {
-  Users.prototype.findOne({
+  this.findOne({
     email: email
   }, function (err, user) {
     cb && cb(err, user);

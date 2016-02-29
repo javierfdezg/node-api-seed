@@ -23,39 +23,33 @@ var Tokens = module.exports = function (options, conf) {
   BaseModel.apply(this, arguments);
 };
 
+//Tokens.prototype.constructor = Tokens;
 inherits(Tokens, BaseModel);
 
 /**
- * Search for valid token, and then search and return the owner of that token.
- * Update validity of the found token
- * @param  {[type]} tk [description]
- * @param  {Function} cb [description]
- * @return {[type]} [description]
+ * Associte a given token to the user
+ * @param  {[type]}   tkn [description]
+ * @param  {[type]}   usr   [description]
+ * @param  {Function} cb    [description]
+ * @return {[type]}         [description]
  */
-Tokens.prototype.searchByBearerToken = function (tk, cb) {
-  conn.collection(conf.tokenscollection, function (err, tokensCollection) {
+Tokens.prototype.createToken = function (tkn, usr, cb) {
+  var self = this;
+  // Save the token
+  self.insertOne({
+    user: usr._id,
+    token: tkn,
+    created_at: new Date(),
+    updated_at: new Date()
+  }, {
+    w: 1
+  }, function (err, tokenObject) {
     if (err) {
-      cb(err);
+      cb && cb(err);
+    } else if (!tokenObject || tokenObject.ops === undefined || tokenObject.ops.length == 0) {
+      cb && cb('Unknown error');
     } else {
-      tokensCollection.findAndModify({
-        token: tk
-      }, [], {
-        $set: {
-          updated_at: new Date(), // Increment time
-        }
-      }, {
-        w: 1,
-        new: false
-      }, function (err, tokenObject) {
-        if (err) {
-          cb && cb(err);
-        } else if (tokenObject) {
-          // Get user
-          module.exports.searchUserById(tokenObject.user, cb);
-        } else {
-          cb && cb(null, null);
-        }
-      });
+      cb && cb(err, tokenObject.ops[0]);
     }
   });
 };
