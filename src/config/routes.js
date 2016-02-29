@@ -6,19 +6,21 @@
 /*jslint node: true */
 "use strict";
 
-var express = require('express');
-var winston = require('winston');
-var timeout = require('connect-timeout');
-var toobusy = require('toobusy-js');
-var responseTime = require('response-time');
-var cors = require('cors');
-var cookieParser = require('cookie-parser');
-var util = require('../lib/util');
-var bodyParser = require('body-parser');
-var I18n = require('i18n-2');
-var i18nm = require('../middleware/i18n');
-var configMiddleware = require('../middleware/config');
-var path = require('path');
+var express = require('express'),
+  winston = require('winston'),
+  timeout = require('connect-timeout'),
+  toobusy = require('toobusy-js'),
+  responseTime = require('response-time'),
+  cors = require('cors'),
+  cookieParser = require('cookie-parser'),
+  util = require('../lib/util'),
+  auth = require('../lib/security'),
+  security = require('../middleware/security'),
+  bodyParser = require('body-parser'),
+  I18n = require('i18n-2'),
+  i18nm = require('../middleware/i18n'),
+  configMiddleware = require('../middleware/config'),
+  path = require('path');
 
 module.exports = function (app, config) {
 
@@ -37,7 +39,7 @@ module.exports = function (app, config) {
 
   // -------- Controllers ------
   var test = require('../controllers/test'); // TEST API services
-  var auth = require('../controllers/auth'); // AUTH API services
+  var authController = require('../controllers/auth'); // AUTH API services
   // Require here your api controllers 
 
   // -------- Routes --------
@@ -79,12 +81,12 @@ module.exports = function (app, config) {
   testRouter.get('/out-of-memory', timeout(10000000), test.testOutOfMemory); // test Out of Memory
   testRouter.get('/long-time', timeout(1000000), test.testLongTime); // test long time loading resource
   testRouter.get('/mongo-connection', timeout(2000), test.testMongoConnection); // test mongo connection
-  testRouter.get('/protected', timeout(2000), test.testProtected); // test protected resource
+  testRouter.get('/protected', timeout(2000), security.execAction('test', 'testProtected', auth.accessLevels.loggedin)); // test protected resource
   testRouter.post('/user', timeout(2000), test.testCreateUser); // test create user
   // ----------------------------------------------------------------------
 
   // --------------------------- AUTH SERVICES ----------------------------
-  authenticateRouter.get('/token', timeout(2000), auth.token);
+  authenticateRouter.get('/token', timeout(2000), authController.token);
   // ----------------------------------------------------------------------
 
   // --------------------------- API ROUTES -------------------------------

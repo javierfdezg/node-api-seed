@@ -10,6 +10,10 @@
 
 var supertest = require('supertest');
 
-global.api = supertest('http://127.0.0.1:4000');
+global.zoo = {
+  api: supertest('http://127.0.0.1:4000'),
+  security: require('../src/lib/security')
+};
+
 global.expect = require('chai').expect;
 global.should = require('chai').should;

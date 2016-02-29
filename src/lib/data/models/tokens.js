@@ -23,7 +23,6 @@ var Tokens = module.exports = function (options, conf) {
   BaseModel.apply(this, arguments);
 };
 
-//Tokens.prototype.constructor = Tokens;
 inherits(Tokens, BaseModel);
 
 /**
@@ -33,7 +32,7 @@ inherits(Tokens, BaseModel);
  * @param  {Function} cb    [description]
  * @return {[type]}         [description]
  */
-Tokens.prototype.createToken = function (tkn, usr, cb) {
+Tokens.prototype.create = function (tkn, usr, cb) {
   var self = this;
   // Save the token
   self.insertOne({

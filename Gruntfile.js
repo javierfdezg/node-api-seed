@@ -70,6 +70,9 @@ module.exports = function (grunt) {
       unit: {
         command: 'mocha --opts test/mocha.opts test/unit',
       },
+      e2e: {
+        command: 'mocha --opts test/mocha.opts test/e2e',
+      },
       createUser: {
         command: 'node scripts/add-user.js -c "<%= config.createUser %>" -n "<%= config.user.fullName %>" -p "<%= config.user.password %>" -e "<%= config.user.email %>"'
       }
@@ -185,6 +188,6 @@ module.exports = function (grunt) {
   grunt.registerTask('default', ['external_daemon:mongodb', 'concurrent:dev']);
 
   // Test
-  grunt.registerTask('test', ['shell:unit', 'shell:functional']);
+  grunt.registerTask('test', ['shell:unit', 'shell:functional', 'shell:e2e']);
 
 };

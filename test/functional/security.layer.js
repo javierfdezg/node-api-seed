@@ -12,22 +12,22 @@ var Chance = require('chance');
 
 describe('API security layer', function () {
 
-  xit('Should return 401 Forbidden (Invalid token)', function (done) {
-    api.get('/test/secured')
+  it('Should return 401 Forbidden (Invalid token)', function (done) {
+    zoo.api.get('/test/secured')
       .set('Authorization', 'Bearer invalidToken1283')
       .expect(401)
       .end(done);
   });
 
-  xit('Should return 403 Bad Request (Unknown authorization header. Only bearer token are supported)', function (done) {
-    api.get('/test/secured')
+  it('Should return 403 Bad Request (Unknown authorization header. Only bearer token are supported)', function (done) {
+    zoo.api.get('/test/secured')
       .set('Authorization', 'Besarer 12341231341d')
       .expect(403)
       .end(done);
   });
 
-  xit('Should return 403 Bad Request (Unknown authorization header. Only bearer token are supported)', function (done) {
-    api.get('/test/secured')
+  it('Should return 403 Bad Request (Unknown authorization header. Only bearer token are supported)', function (done) {
+    zoo.api.get('/test/secured')
       .set('Authorization', 'baz')
       .expect(403)
       .end(done);
@@ -40,21 +40,22 @@ describe('API security layer', function () {
       email: chance.email({
         domain: "example.com"
       }),
-      password: chance.string()
+      password: chance.string(),
+      role: zoo.security.userRoles.admin
     };
 
     // Create user, login and get protected resource
-    api.post('/test/user')
+    zoo.api.post('/test/user')
       .send(user)
       .expect(201)
       .end(function (err, res) {
         if (err) throw err;
-        api.get('/auth/token')
+        zoo.api.get('/auth/token')
           .auth(user.email, user.password)
           .expect(200)
           .end(function (err, res) {
             if (err) throw err;
-            api.get('/test/protected')
+            zoo.api.get('/test/protected')
               .set('Authorization', 'Bearer ' + res.body.token)
               .expect(200)
               .end(function (err, res) {

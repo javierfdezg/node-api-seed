@@ -27,7 +27,6 @@ var Users = module.exports = function (options, conf) {
   BaseModel.apply(this, arguments);
 };
 
-//Users.prototype.constructor = Users;
 module.exports.collectionName = 'users';
 inherits(Users, BaseModel);
 
@@ -40,7 +39,9 @@ inherits(Users, BaseModel);
 Users.prototype.create = function (usr, cb) {
   var self = this;
   if (usr.password) {
-    self.getByEmail(usr.email, function (err, userExists) {
+    self.findOne({
+      email: usr.email
+    }, function (err, userExists) {
       if (err) {
         winston.error('Error searching for %s in database (User.create): %s', usr.email, err.message);
         cb({
@@ -116,13 +117,5 @@ Users.prototype.searchByBearerToken = function (tk, cb) {
     } else {
       cb && cb(null, null);
     }
-  });
-};
-
-Users.prototype.getByEmail = function (email, cb) {
-  this.findOne({
-    email: email
-  }, function (err, user) {
-    cb && cb(err, user);
   });
 };

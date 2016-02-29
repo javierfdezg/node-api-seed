@@ -99,8 +99,10 @@ module.exports.userPassword = function (req, res, next) {
         user = parts[0];
         password = parts[1];
 
-        // Search for user in database
-        Users.getByEmail(user, function (err, usr) {
+        // Search for user by email in database
+        Users.findOne({
+          email: user
+        }, function (err, usr) {
           if (err) {
             winston.error("[API 500 ERROR] Error searching for user %s: %s ", user, err);
             util.sendResponse(req, res, 500, {
@@ -147,4 +149,37 @@ module.exports.userPassword = function (req, res, next) {
       error: 'Not Authorized'
     });
   }
+};
+
+/**
+ * Returns a middleware that executes an action based on controler/action names
+ * @param  {[type]} req [description]
+ * @return {[type]}     [description]
+ */
+module.exports.execAction = function (controller, action, accessLevel) {
+  var ctrl = require('./../controllers/' + controller);
+  return (function (req, res, next) {
+
+    try {
+      // Test if actions exists
+      if (ctrl[action] === undefined) throw "No action found";
+      // Access gra nted
+      if (util.allow(req.user, accessLevel)) {
+        ctrl[action](req, res, next);
+      }
+      // Unauthorized access
+      else {
+        winston.warn("------------------------------------------------------");
+        winston.warn("%s, Role %s , required: %d", req.path, (req.user && req.user.role) ? req.user.role : 'not identified', accessLevel);
+        winston.warn("------------------------------------------------------");
+        util.sendResponse(req, res, 401, {
+          error: req.i18n.__('Unauthorized')
+        });
+      }
+    } catch (e) {
+      winston.error("No controller/action found: %s/%s %s", controller, action, e.toString());
+      next();
+    }
+
+  });
 };

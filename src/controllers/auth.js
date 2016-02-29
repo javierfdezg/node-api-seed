@@ -28,7 +28,7 @@ exports.token = function (req, res) {
         error: 'Error generating access token'
       });
     } else {
-      Tokens.createToken(token, req.user, function (err, tokenObject) {
+      Tokens.create(token, req.user, function (err, tokenObject) {
         if (err) {
           util.sendResponse(req, res, 500, {
             error: 'Error saving access token'
