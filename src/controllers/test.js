@@ -104,6 +104,19 @@ exports.testProtected = function (req, res) {
 
 };
 
+exports.testProtectedApiKey = function (req, res) {
+  if (req.organization) {
+    util.sendResponse(req, res, 200, {
+      secured: req.organization
+    });
+  } else {
+    util.sendResponse(req, res, 401, {
+      error: 'Forbidden'
+    });
+  }
+
+};
+
 /**
  * Create one user
  * @param  {[type]} req [description]

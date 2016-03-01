@@ -1,6 +1,5 @@
 /*
  * Copyright (c) Why Not Soluciones, S.L.
- * Licensed under the Copyright license.
  */
 
 /*jslint node: true */
@@ -9,7 +8,6 @@
 "use strict";
 
 var util = require('../../src/lib/util');
-var expect = require('expect.js');
 
 describe('Util module unit tests', function () {
 

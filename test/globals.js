@@ -8,11 +8,26 @@
 /*jshint -W030 */
 "use strict";
 
-var supertest = require('supertest');
+var supertest = require('supertest'),
+  util = require('../src/lib/util'),
+  sinon = require('sinon');
+
+var sendResponseCallbackSpy = sinon.spy(); // Tip: reset in beforeEach zoo.sendResponseCallbackSpy.reset() if necesary
 
 global.zoo = {
   api: supertest('http://127.0.0.1:4000'),
-  security: require('../src/lib/security')
+  security: require('../src/lib/security'),
+  getReq: function () {
+    return {
+      i18n: {
+        __: function (str) {
+          return str;
+        }
+      }
+    };
+  },
+  sendResponseStub: sinon.stub(util, "sendResponse", sendResponseCallbackSpy),
+  sendResponseCallbackSpy: sendResponseCallbackSpy
 };
 
 global.expect = require('chai').expect;

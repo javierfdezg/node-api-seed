@@ -158,20 +158,22 @@ module.exports.userPassword = function (req, res, next) {
  */
 module.exports.execAction = function (controller, action, accessLevel) {
   var ctrl = require('./../controllers/' + controller);
-  return (function (req, res, next) {
 
+  return (function (req, res, next) {
     try {
       // Test if actions exists
       if (ctrl[action] === undefined) throw "No action found";
-      // Access gra nted
-      if (util.allow(req.user, accessLevel)) {
+
+      // All API Keys bypass user role authorization
+      if (req.organization !== undefined) {
+        ctrl[action](req, res, next);
+      }
+      // Access granted
+      else if (req.user !== undefined && util.allow(req.user, accessLevel)) {
         ctrl[action](req, res, next);
       }
       // Unauthorized access
       else {
-        winston.warn("------------------------------------------------------");
-        winston.warn("%s, Role %s , required: %d", req.path, (req.user && req.user.role) ? req.user.role : 'not identified', accessLevel);
-        winston.warn("------------------------------------------------------");
         util.sendResponse(req, res, 401, {
           error: req.i18n.__('Unauthorized')
         });
