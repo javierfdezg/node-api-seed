@@ -4,13 +4,13 @@ eval "$(docker-machine env default)"
 
 case $1 in
   image)
-    docker rmi whynotsoluciones/${projectName}-argon:latest
+    docker rmi whynotsoluciones/${projectName}-node:latest
     ;;
   container)
     docker rm ${projectName}
     ;;
   *)
     docker rm ${projectName}
-    docker rmi whynotsoluciones/${projectName}-argon:latest
+    docker rmi whynotsoluciones/${projectName}-node:latest
     ;;
 esac

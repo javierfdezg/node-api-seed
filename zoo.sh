@@ -144,6 +144,11 @@ function ctrl_c() {
 
 if [ "$1" != "init" ] && [ "$1" != "" ];
 then
+  docker-machine ls | if grep --silent 'default.*Stopped'
+  then
+    echo "Docker VM not running."
+    docker-machine start default
+  fi
   eval "$(docker-machine env default)"
 fi
 
