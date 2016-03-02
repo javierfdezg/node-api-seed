@@ -1,11 +1,12 @@
 #!/bin/bash
+source .zooconfig
 eval "$(docker-machine env default)"
 
 # Check if container exists
-docker ps | if grep --silent shark 
+docker ps | if grep --silent ${projectName}
 then
   echo -n "Stopping shark container. This can take a while... "
-  docker stop shark &> /dev/null
+  docker stop ${projectName} &> /dev/null
   echo "done"
 else
   echo "No shark container running. Do nothing"

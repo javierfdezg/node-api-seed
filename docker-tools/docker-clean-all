@@ -1,15 +1,16 @@
 #!/bin/bash
+source .zooconfig
 eval "$(docker-machine env default)"
 
 case $1 in
   image)
-    docker rmi whynotsoluciones/node-argon:latest
+    docker rmi whynotsoluciones/${projectName}-argon:latest
     ;;
   container)
-    docker rm shark
+    docker rm ${projectName}
     ;;
   *)
-    docker rm shark
-    docker rmi whynotsoluciones/node-argon:latest
+    docker rm ${projectName}
+    docker rmi whynotsoluciones/${projectName}-argon:latest
     ;;
 esac
