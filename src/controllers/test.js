@@ -10,7 +10,8 @@ var winston = require('winston'),
   fs = require('fs'),
   path = require('path'),
   util = require('../lib/util'),
-  Users = require('../lib/data').Users;
+  Users = require('../lib/data').Users,
+  Organizations = require('../lib/data').Organizations;
 
 /**
  * Used to test timeout condition in a request with no response
@@ -133,6 +134,21 @@ exports.testCreateUser = function (req, res) {
       });
     } else {
       util.sendResponse(req, res, 201, usr);
+    }
+  })
+
+};
+
+exports.testCreateOrganization = function (req, res) {
+  var organization = req.body;
+  organization.delete_from = new Date(); // Set expiration (test organizations can be deleted)
+  Organizations.insertOne(organization, {
+    w: 1
+  }, function (err, org) {
+    if (err || org === undefined ||  org.ops === undefined ||  org.ops.length === 0) {
+      util.sendResponse(req, res, 500, req.i18n.__('Error in insertOne'));
+    } else {
+      util.sendResponse(req, res, 201, org.ops[0]);
     }
   })
 

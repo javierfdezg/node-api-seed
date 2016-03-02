@@ -19,7 +19,7 @@ var Users = module.exports = function (options, conf) {
   this.indexes = [{
     fieldOrSpec: 'delete_from',
     options: {
-      expireAfterSeconds: conf.testuserexpiration
+      expireAfterSeconds: conf.testobjectexpiration
     }
   }];
 

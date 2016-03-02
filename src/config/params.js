@@ -27,7 +27,7 @@ module.exports = exports = {
     poolsize: 5,
     options: {}, // MongoDB options
     tokenexpiration: 60 * 60 * 24 * 30, // Token expiration time in seconds
-    testuserexpiration: 60 // Test user expiration time in seconds
+    testobjectexpiration: 60 // Test objects expiration time in seconds
   },
   logging: {
     directory: path.normalize(__dirname + '/../../' + '/log/'),

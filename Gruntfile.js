@@ -173,8 +173,8 @@ module.exports = function (grunt) {
         src: ['./test/globals.js'], // global for testing
         overwrite: true,
         replacements: [{
-          from: 'global.api = supertest(\'http://127.0.0.1:4000\');', // api end-point
-          to: 'global.api = supertest(\'http://127.0.0.1:<%= config.httpp %>\');'
+          from: 'port: \'4000\', // API port', // api end-point
+          to: 'port: \'<%= config.httpp %>\', // API port'
         }]
       }
     },

@@ -52,17 +52,17 @@ module.exports = function (app, config) {
     });
   });
 
-  // User user/password middleware to validate user
-  authenticateRouter.use(require('../middleware/security').userPassword);
-
-  // Use bearer middleware to validate bearer token if present
-  router.use(require('../middleware/security').bearer);
-  testRouter.use(require('../middleware/security').bearer);
-
   // Body parser
   router.use(bodyParser.json());
   authenticateRouter.use(bodyParser.json());
   testRouter.use(bodyParser.json());
+
+  // User user/password middleware to validate user
+  authenticateRouter.use(security.authentication('Basic'));
+
+  // Use bearer middleware to validate bearer token if present / API Key
+  router.use(security.authorization(['Bearer', 'WNS']));
+  testRouter.use(security.authorization(['Bearer', 'WNS']));
 
   // Config
   router.use(configMiddleware(config));
@@ -82,7 +82,12 @@ module.exports = function (app, config) {
   testRouter.get('/long-time', timeout(1000000), test.testLongTime); // test long time loading resource
   testRouter.get('/mongo-connection', timeout(2000), test.testMongoConnection); // test mongo connection
   testRouter.get('/protected', timeout(2000), security.execAction('test', 'testProtected', auth.accessLevels.loggedin)); // test protected resource
+  testRouter.get('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.loggedin)); // test protected resource
+  testRouter.post('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.loggedin)); // test protected resource
+  testRouter.put('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.loggedin)); // test protected resource
+  testRouter["delete"]('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.loggedin)); // test protected resource
   testRouter.post('/user', timeout(2000), test.testCreateUser); // test create user
+  testRouter.post('/organization', timeout(2000), test.testCreateOrganization); // test create oganization
   // ----------------------------------------------------------------------
 
   // --------------------------- AUTH SERVICES ----------------------------
@@ -138,7 +143,7 @@ module.exports = function (app, config) {
   app.use(haltOnTimedout);
 
   // Main router
-  app.use('/', router);
+  app.use(/^(?!(\/test\/|\/auth\/))/, router);
 
   app.use(haltOnTimedout);
 

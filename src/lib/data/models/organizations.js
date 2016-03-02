@@ -15,4 +15,18 @@ var Organizations = module.exports = function (options, conf) {
   BaseModel.apply(this, arguments);
 };
 
+Organizations.prototype.searchByAPIKey = function (key, cb) {
+  var self = this;
+  // Save the token
+  self.aggregate([{
+    $unwind: "$apiKeys"
+  }, {
+    $match: {
+      "apiKeys.key": {
+        $eq: key
+      }
+    }
+  }], cb);
+};
+
 inherits(Organizations, BaseModel);

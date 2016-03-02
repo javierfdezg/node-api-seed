@@ -154,3 +154,19 @@ exports.fileToCollectionName = function (fileName) {
 exports.collectionToClassName = function (collectionName) {
   return changeCase.pascalCase(collectionName);
 };
+
+/**
+ * [stringToBase64 description]
+ * @param  {[type]} str [description]
+ * @return {[type]}     [description]
+ */
+exports.stringToBase64 = function (str) {
+  return new Buffer(str).toString('base64');
+};
+
+exports.isEmptyObject = function (obj) {
+  if (obj === undefined || obj === null) {
+    return true;
+  }
+  return Object.keys(obj).length === 0 && JSON.stringify(obj) === JSON.stringify({});
+};
