@@ -1,7 +1,8 @@
 #!/bin/bash
+source .zooconfig
 eval "$(docker-machine env default)"
 
-docker pull whynotsoluciones/node-argon:latest
+docker pull whynotsoluciones/${projectName}-node:latest
 docker-tools/docker-clean-all container
 
 echo "Docker image updated"
