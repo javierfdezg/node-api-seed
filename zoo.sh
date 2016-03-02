@@ -32,9 +32,9 @@ ask() {
     done
 }
 
-init() {
+init_aux() {
 
-  GITHOOK_VSETUP_DIR='githook-setup'
+  GITHOOK_SETUP_DIR='githook-setup'
 
   if [ -d "$GITHOOK_SETUP_DIR" ]; then
     chmod 755 ./githook-setup/setup.sh
@@ -72,24 +72,41 @@ init() {
   echo "done"
 
   echo -e "Setting up the framework config"
+
+  read -p "Project name (`basename $(pwd)`): " projectName
+  projectName=${projectName:-`basename $(pwd)`}
+  echo "projectName=${projectName}" > .zooconfig
+
   # Set up the config params
   read -p "API Port (4000): " apiPort
-  apiPort=${apiPort:-4000} 
-  echo "apiPort=${apiPort}" > .frameworkconfig
+  apiPort=${apiPort:-4000}
+  echo "apiPort=${apiPort}" >> .zooconfig
 
   read -p "Source directory (`pwd`): " srcDir
   srcDir=${srcDir:-`pwd`}
-  echo "srcDir=${srcDir}" >> .frameworkconfig
+  echo "srcDir=${srcDir}" >> .zooconfig
+}
+
+init() {
+
+  if [ -f .zooconfig ]; 
+  then
+    if ask "This directory seems to have been initialized. Reinitialize?" Y; then
+      init_aux
+    else
+      exit 1;
+    fi
+  fi
 
 }
 
 help() {
   echo "usage: $0 [command] [--help]"
-  echo 
+  echo
   echo "Available commands:"
   echo -e "clean-images\t\tRemove all untagged images"
   echo -e "connect\t\t\tConnect to docker container"
-  echo -e "init\t\t\tInitialize framework"
+  echo -e "init\t\t\tInitialize zoo"
   echo -e "run\t\t\tRun docker container"
   echo -e "update\t\t\tAttempt to pull a remote image and update the container"
   echo -e "upgrade\t\t\tCreate a new image and push to remote repo"
@@ -118,6 +135,22 @@ stop() {
 clean-images() {
   docker rmi $(docker images | grep "^<none>" | awk "{ print $3 }")
 }
+
+# Trap Ctrl+c and exit
+trap ctrl_c INT
+function ctrl_c() {
+  exit 1
+}
+
+if [ "$1" != "init" ] && [ "$1" != "" ];
+then
+  docker-machine ls | if grep --silent 'default.*Stopped'
+  then
+    echo "Docker VM not running."
+    docker-machine start default
+  fi
+  eval "$(docker-machine env default)"
+fi
 
 case $1 in
     init)
