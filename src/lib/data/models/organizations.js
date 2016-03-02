@@ -11,6 +11,14 @@ var BaseModel = require('../base-model'),
 
 var Organizations = module.exports = function (options, conf) {
 
+  // Collection indexes
+  this.indexes = [{
+    fieldOrSpec: 'delete_from',
+    options: {
+      expireAfterSeconds: conf.testobjectexpiration
+    }
+  }];
+
   // Call Super constructor
   BaseModel.apply(this, arguments);
 };
