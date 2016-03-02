@@ -17,5 +17,10 @@ REPO="whynotsoluciones"
 IMAGE="${projecName}-node"
 TAG="latest"
 
+if [ ! -f `pwd`/.dockerimages ];
+then
+  touch `pwd`/.dockerimages
+fi
+
 sed -i '' -e "s/.*${REPO}.*${IMAGE}.*${TAG}.*/${REPO}\/${IMAGE}:${TAG}|$(date +%s)/" `pwd`/.dockerimages
 
