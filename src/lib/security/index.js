@@ -11,10 +11,10 @@ var util = require('../util'),
 
 // Remember to update also in app/www/js/services/user.js
 var userRoles = {
-  root: 0x99,
+  root: 0x100, // 100000000
   public: 0x01, // 000000001: public user
   admin: 0x02, // 0000000010 
-  readonly: 0x03
+  readonly: 0x04 // 000000100
 };
 
 // Remember to update also in app/www/js/services/user.js
