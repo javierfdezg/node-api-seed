@@ -81,11 +81,11 @@ module.exports = function (app, config) {
   testRouter.get('/out-of-memory', timeout(10000000), test.testOutOfMemory); // test Out of Memory
   testRouter.get('/long-time', timeout(1000000), test.testLongTime); // test long time loading resource
   testRouter.get('/mongo-connection', timeout(2000), test.testMongoConnection); // test mongo connection
-  testRouter.get('/protected', timeout(2000), security.execAction('test', 'testProtected', auth.accessLevels.loggedin)); // test protected resource
-  testRouter.get('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.loggedin)); // test protected resource
-  testRouter.post('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.loggedin)); // test protected resource
-  testRouter.put('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.loggedin)); // test protected resource
-  testRouter["delete"]('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.loggedin)); // test protected resource
+  testRouter.get('/protected', timeout(2000), security.execAction('test', 'testProtected', auth.accessLevels.admin)); // test protected resource
+  testRouter.get('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.admin)); // test protected resource
+  testRouter.post('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.admin)); // test protected resource
+  testRouter.put('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.admin)); // test protected resource
+  testRouter["delete"]('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.admin)); // test protected resource
   testRouter.post('/user', timeout(2000), test.testCreateUser); // test create user
   testRouter.post('/organization', timeout(2000), test.testCreateOrganization); // test create oganization
   // ----------------------------------------------------------------------

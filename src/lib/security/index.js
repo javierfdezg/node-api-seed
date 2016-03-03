@@ -11,16 +11,22 @@ var util = require('../util'),
 
 // Remember to update also in app/www/js/services/user.js
 var userRoles = {
+  root: 0x99,
   public: 0x01, // 000000001: public user
-  admin: 0x02 // 0000000010 
+  admin: 0x02, // 0000000010 
+  readonly: 0x03
 };
 
 // Remember to update also in app/www/js/services/user.js
 var accessLevels = {
-  // Public level
-  public: userRoles.public | userRoles.admin,
+  // Root
+  root: userRoles.root,
   // Logged in level
-  loggedin: userRoles.admin
+  admin: userRoles.admin | userRoles.root,
+  // Read-only
+  readonly: userRoles.admin | userRoles.root | userRoles.readonly,
+  // Public level
+  public: userRoles.public | userRoles.admin | userRoles.root | userRoles.readonly
 };
 
 module.exports.userRoles = userRoles;

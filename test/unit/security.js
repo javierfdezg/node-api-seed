@@ -42,7 +42,7 @@ describe('Security middleware Unit Tests', function () {
 
     it('It should call util.allow when organization not present in request and not execute protected action', function (done) {
 
-      var middleware = security.execAction('test', 'testProtectedApiKey', zoo.security.accessLevels.loggedin);
+      var middleware = security.execAction('test', 'testProtectedApiKey', zoo.security.accessLevels.admin);
       req.user = {};
       middleware(req, {}, function () {
         done('Controller action not found');
