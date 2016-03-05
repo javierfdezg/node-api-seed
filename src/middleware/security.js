@@ -7,9 +7,11 @@
 
 var winston = require('winston'),
   util = require('../lib/util'),
+  nutil = require('util'),
   security = require('../lib/security'),
   Users = require('../lib/data').Users,
-  Organizations = require('../lib/data').Organizations;
+  Organizations = require('../lib/data').Organizations,
+  ObjectId = require('mongodb').ObjectID;
 
 var auth = {
   authorizationMethods: {},
@@ -95,6 +97,7 @@ auth.authorizationMethods.Bearer = function (req, res, next) {
           } else if (user) {
             // User found
             req.user = user;
+            req.organizationId = user.organization; // attach organization._id to req
             next();
           } else {
             // No valid token found
@@ -156,9 +159,9 @@ auth.authenticationMethods.Basic = function (req, res, next) {
         password = parts[1];
 
         // Search for user by email in database
-        Users.findOne({
+        Users.find({
           email: user
-        }, function (err, usr) {
+        }).limit(1).next(function (err, usr) {
           if (err) {
             winston.error("[API 500 ERROR] Error searching for user %s: %s ", user, err);
             util.sendResponse(req, res, 500, {
@@ -241,6 +244,7 @@ auth.authorizationMethods.WNS = function (req, res, next) {
               if (security.checkSignature(req, signature, organization.apiKeys.secret)) {
                 // User found
                 req.organization = organization;
+                req.organizationId = organization._id; // attach organization._id to req
                 next();
               } else {
                 // Invalid signature
@@ -290,15 +294,25 @@ auth.authorizationMethods.WNS = function (req, res, next) {
  * @return {[type]}     [description]
  */
 module.exports.execAction = function (controller, action, accessLevel) {
-  var ctrl = require('./../controllers/' + controller);
+  var ctrl = null;
+
+  try {
+    ctrl = require('./../controllers/' + controller);
+  } catch (ex) {
+    throw new Error(nutil.format('Controller %s not found', controller));
+  }
 
   return (function (req, res, next) {
     try {
       // Test if actions exists
       if (ctrl[action] === undefined) throw "No action found";
 
+      // Allow to get all public resource
+      if (accessLevel === security.accessLevels.public) {
+        ctrl[action](req, res, next);
+      }
       // All API Keys bypass user role authorization
-      if (req.organization !== undefined) {
+      else if (req.organization !== undefined) {
         ctrl[action](req, res, next);
       }
       // Access granted
@@ -317,4 +331,52 @@ module.exports.execAction = function (controller, action, accessLevel) {
     }
 
   });
+};
+
+module.exports.checkOwnerAndExecAction = function (controller, action, accessLevel) {
+
+  return (function (req, res, next) {
+    var parts = req.path.split("/");
+    var model;
+
+    if (!parts || parts.length < 3 || parts[1] == '' || parts[2] == '') {
+      util.sendResponse(req, res, 500, {
+        error: req.i18n.__('Invalid resource')
+      });
+    } else {
+      try {
+        // Check if model exists
+        model = require('../lib/data/models/' + parts[1].toLowerCase());
+
+        // Check if entity exists
+        model.find({
+          _id: ObjectId(parts[2])
+        }).limit(1).next(function (err, entity) {
+          if (err) {
+            winston.error('Error searching for entity /%s/%s: %s', parts[1], parts[2], err.message);
+            util.sendResponse(req, res, 500, {
+              error: req.i18n.__('Error searching for entity')
+            });
+          } else if (!entity) {
+            util.sendResponse(req, res, 500, {
+              error: req.i18n.__('No model found')
+            });
+          } else if (entity.organization !== undefined && entity.organization.equals !== undefined && entity.organization.equals(req.organizationId)) {
+            // Call execAction
+            module.exports.execAction(controller, action, accessLevel)(req, res, next);
+          } else {
+            util.sendResponse(req, res, 403, {
+              error: req.i18n.__('Forbidden')
+            });
+          }
+        });
+        // Check if request user/organization owns entity
+      } catch (ex) {
+        util.sendResponse(req, res, 500, {
+          error: req.i18n.__('Invalid resource model')
+        });
+      }
+    }
+  });
+
 };

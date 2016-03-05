@@ -39,9 +39,9 @@ inherits(Users, BaseModel);
 Users.prototype.create = function (usr, cb) {
   var self = this;
   if (usr.password) {
-    self.findOne({
+    self.find({
       email: usr.email
-    }, function (err, userExists) {
+    }).limit(1).next(function (err, userExists) {
       if (err) {
         winston.error('Error searching for %s in database (User.create): %s', usr.email, err.message);
         cb({
@@ -109,9 +109,9 @@ Users.prototype.searchByBearerToken = function (tk, cb) {
       cb && cb(err);
     } else if (tokenObject && tokenObject.value) {
       // Get user with id stored in token's record
-      self.findOne({
+      self.find({
         _id: ObjectId(tokenObject.value.user)
-      }, function (err, userObject) {
+      }).limit(1).next(function (err, userObject) {
         cb && cb(err, userObject);
       });
     } else {
