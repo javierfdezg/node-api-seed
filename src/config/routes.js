@@ -81,7 +81,10 @@ module.exports = function (app, config) {
   testRouter.get('/out-of-memory', timeout(10000000), test.testOutOfMemory); // test Out of Memory
   testRouter.get('/long-time', timeout(1000000), test.testLongTime); // test long time loading resource
   testRouter.get('/mongo-connection', timeout(2000), test.testMongoConnection); // test mongo connection
+  testRouter.get('/public', timeout(2000), security.execAction('test', 'testPublic', auth.accessLevels.public)); // test public resource
   testRouter.get('/protected', timeout(2000), security.execAction('test', 'testProtected', auth.accessLevels.admin)); // test protected resource
+  testRouter.get('/protected-root', timeout(2000), security.execAction('test', 'testProtected', auth.accessLevels.root)); // test protected root resource
+  testRouter.get('/protected-readonly', timeout(2000), security.execAction('test', 'testProtected', auth.accessLevels.readonly)); // test protected read-only resource
   testRouter.get('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.admin)); // test protected resource
   testRouter.post('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.admin)); // test protected resource
   testRouter.put('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.admin)); // test protected resource

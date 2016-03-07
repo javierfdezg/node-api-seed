@@ -14,37 +14,33 @@ describe('API security layer', function () {
 
   describe('Bearer Token', function () {
 
-    it('Should create a new user, login with that user and get the bearer token, and then get protected resource', function (done) {
+    var user;
+    var token;
 
-      var chance = new Chance();
-      var user = {
-        email: chance.email({
-          domain: "example.com"
-        }),
-        password: chance.string(),
-        role: zoo.security.userRoles.admin
-      };
+    /**
+     * Create a new User an Login
+     */
+    before(function (done) {
+      // Create organization
+      zoo.createUserAndLogin(zoo.security.userRoles.admin, function (err, createdUser, createdToken) {
+        if (err) {
+          done(err);
+        } else {
+          user = createdUser;
+          token = createdToken;
+          done();
+        }
+      });
+    });
 
-      // Create user, login and get protected resource
-      zoo.api.post('/test/user')
-        .send(user)
-        .expect(201)
+    it('Should be able to get a protected resource', function (done) {
+      zoo.api.get('/test/protected')
+        .set('Authorization', 'Bearer ' + token)
+        .expect(200)
         .end(function (err, res) {
           if (err) throw err;
-          zoo.api.get('/auth/token')
-            .auth(user.email, user.password)
-            .expect(200)
-            .end(function (err, res) {
-              if (err) throw err;
-              zoo.api.get('/test/protected')
-                .set('Authorization', 'Bearer ' + res.body.token)
-                .expect(200)
-                .end(function (err, res) {
-                  if (err) throw err;
-                  expect(res.body).to.have.deep.property('secured.email', user.email);
-                  done();
-                });
-            });
+          expect(res.body).to.have.deep.property('secured.email', user.email);
+          done();
         });
     });
 
@@ -52,8 +48,7 @@ describe('API security layer', function () {
 
   describe('API Key/secret', function () {
     var organization;
-    var pair1 = {};
-    var pair2 = {};
+    var pair1;
     var obj = {
       prop1: "Example",
       prop2: 12.2,
@@ -68,32 +63,20 @@ describe('API security layer', function () {
       originalUrl: '/test/protected-apikey'
     };
 
+    /**
+     * Create an Organization with API keys
+     */
     before(function (done) {
-      // Piramid >:)
-      zoo.security.generateRandomKeySignature(20, function (err, str) {
-        pair1.key = str;
-        zoo.security.generateRandomKeySignature(20, function (err, str) {
-          pair2.key = str;
-          zoo.security.generateRandomKeySignature(40, function (err, str) {
-            pair1.secret = str;
-            zoo.security.generateRandomKeySignature(40, function (err, str) {
-              pair2.secret = str;
-              var chance = new Chance();
-              organization = {
-                name: chance.word(),
-                apiKeys: [pair1, pair2]
-              };
-
-              // Create organization, login and get protected resource
-              zoo.api.post('/test/organization')
-                .send(organization)
-                .expect(201)
-                .end(done);
-            });
-          });
-        });
+      // Create organization
+      zoo.createOrganization(function (err, org) {
+        if (err) {
+          done(err);
+        } else {
+          organization = org;
+          pair1 = organization.apiKeys[0];
+          done();
+        }
       });
-
     });
 
     beforeEach(function (done) {
@@ -242,6 +225,217 @@ describe('API security layer', function () {
           .end(done);
       });
     });
+
+  });
+
+  describe('Authorization Access Levels', function () {
+
+    describe('Public User', function () {
+
+      it('Should be able to get a public resource', function (done) {
+        zoo.api.get('/test/public')
+          .expect(200)
+          .end(function (err, res) {
+            expect(err).to.be.null;
+            expect(res.body).to.have.property('message');
+            done();
+          });
+      });
+
+      it('Should not be able to get a protected resource', function (done) {
+        zoo.api.get('/test/protected')
+          .set('Authorization', 'Bearer ')
+          .expect(401)
+          .end(done);
+      });
+
+    });
+
+    describe('Read-only User', function () {
+
+      var roUser;
+      var roToken;
+
+      /**
+       * Create a new User an Login
+       */
+      before(function (done) {
+        // Create organization
+        zoo.createUserAndLogin(zoo.security.userRoles.readonly, function (err, createdUser, createdToken) {
+          if (err) {
+            done(err);
+          } else {
+            roUser = createdUser;
+            roToken = createdToken;
+            done();
+          }
+        });
+      });
+
+      it('Should not be able to get a protected resource', function (done) {
+        zoo.api.get('/test/protected')
+          .set('Authorization', 'Bearer ' + roToken)
+          .expect(401)
+          .end(done);
+      });
+
+      it('Should be able to get a public resource', function (done) {
+        zoo.api.get('/test/public')
+          .set('Authorization', 'Bearer ' + roToken)
+          .expect(200)
+          .end(function (err, res) {
+            expect(err).to.be.null;
+            expect(res.body).to.have.property('message');
+            done();
+          });
+      });
+
+      it('Should be able to get a read-only protected resource', function (done) {
+        zoo.api.get('/test/protected-readonly')
+          .set('Authorization', 'Bearer ' + roToken)
+          .expect(200)
+          .end(function (err, res) {
+            expect(err).to.be.null;
+            expect(res.body).to.have.deep.property('secured.email', roUser.email);
+            done();
+          });
+      });
+
+    });
+
+    describe('Admin User', function () {
+
+      var adminUser;
+      var adminToken;
+
+      /**
+       * Create a new User an Login
+       */
+      before(function (done) {
+        // Create organization
+        zoo.createUserAndLogin(zoo.security.userRoles.admin, function (err, createdUser, createdToken) {
+          if (err) {
+            done(err);
+          } else {
+            adminUser = createdUser;
+            adminToken = createdToken;
+            done();
+          }
+        });
+      });
+
+      it('Should not be able to get a root protected resource', function (done) {
+        zoo.api.get('/test/protected-root')
+          .set('Authorization', 'Bearer ' + adminToken)
+          .expect(401)
+          .end(done);
+      });
+
+      it('Should be able to get a protected resource', function (done) {
+        zoo.api.get('/test/protected')
+          .set('Authorization', 'Bearer ' + adminToken)
+          .expect(200)
+          .end(function (err, res) {
+            expect(err).to.be.null;
+            expect(res.body).to.have.deep.property('secured.email', adminUser.email);
+            done();
+          });
+      });
+
+      it('Should be able to get a public resource', function (done) {
+        zoo.api.get('/test/public')
+          .set('Authorization', 'Bearer ' + adminToken)
+          .expect(200)
+          .end(function (err, res) {
+            expect(err).to.be.null;
+            expect(res.body).to.have.property('message');
+            done();
+          });
+      });
+
+      it('Should be able to get a read-only protected resource', function (done) {
+        zoo.api.get('/test/protected-readonly')
+          .set('Authorization', 'Bearer ' + adminToken)
+          .expect(200)
+          .end(function (err, res) {
+            expect(err).to.be.null;
+            expect(res.body).to.have.deep.property('secured.email', adminUser.email);
+            done();
+          });
+      });
+
+    });
+
+    describe('Root User', function () {
+
+      var rootUser;
+      var rootToken;
+
+      /**
+       * Create a new User an Login
+       */
+      before(function (done) {
+        // Create organization
+        zoo.createUserAndLogin(zoo.security.userRoles.root, function (err, createdUser, createdToken) {
+          if (err) {
+            done(err);
+          } else {
+            rootUser = createdUser;
+            rootToken = createdToken;
+            done();
+          }
+        });
+      });
+
+      it('Should be able to get a root protected resource', function (done) {
+        zoo.api.get('/test/protected-root')
+          .set('Authorization', 'Bearer ' + rootToken)
+          .expect(200)
+          .end(function (err, res) {
+            expect(err).to.be.null;
+            expect(res.body).to.have.deep.property('secured.email', rootUser.email);
+            done();
+          });
+      });
+
+      it('Should be able to get a protected resource', function (done) {
+        zoo.api.get('/test/protected')
+          .set('Authorization', 'Bearer ' + rootToken)
+          .expect(200)
+          .end(function (err, res) {
+            expect(err).to.be.null;
+            expect(res.body).to.have.deep.property('secured.email', rootUser.email);
+            done();
+          });
+      });
+
+      it('Should be able to get a public resource', function (done) {
+        zoo.api.get('/test/public')
+          .set('Authorization', 'Bearer ' + rootToken)
+          .expect(200)
+          .end(function (err, res) {
+            expect(err).to.be.null;
+            expect(res.body).to.have.property('message');
+            done();
+          });
+      });
+
+      it('Should be able to get a read-only protected resource', function (done) {
+        zoo.api.get('/test/protected-readonly')
+          .set('Authorization', 'Bearer ' + rootToken)
+          .expect(200)
+          .end(function (err, res) {
+            expect(err).to.be.null;
+            expect(res.body).to.have.deep.property('secured.email', rootUser.email);
+            done();
+          });
+      });
+
+    });
+
+  });
+
+  describe('Model Ownership Check', function () {
 
   });
 

@@ -7,5 +7,6 @@
 	},
 	"Unauthorized": "Unauthorized",
 	"Hello %s!!": "Hello %s!!",
-	"This email already exists": "This email already exists"
+	"This email already exists": "This email already exists",
+	"Public Message": "Public Message"
 }

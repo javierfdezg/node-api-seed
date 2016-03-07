@@ -68,6 +68,7 @@ BaseModel.prototype.getCollectionAndExecMethod = function (method, args) {
 
 /**
  * Validate model agains JSON Schema defined in property schema
+ * https://github.com/flatiron/revalidator
  * http://tools.ietf.org/html/draft-zyp-json-schema-04
  * @param  {[type]} obj Object to validate
  * @return {[type]} an object like this:

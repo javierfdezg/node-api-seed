@@ -10,6 +10,7 @@ var winston = require('winston'),
   path = require('path'),
   util = require('../lib/util'),
   Users = require('../lib/data').Users,
+  ObjectID = require('mongodb').ObjectID,
   Organizations = require('../lib/data').Organizations;
 
 /**
@@ -86,6 +87,18 @@ exports.testMongoConnection = function (req, res) {
 };
 
 /**
+ * [testPublic description]
+ * @param  {[type]} req [description]
+ * @param  {[type]} res [description]
+ * @return {[type]}     [description]
+ */
+exports.testPublic = function (req, res) {
+  util.sendResponse(req, res, 200, {
+    message: req.i18n.__('Public Message')
+  });
+};
+
+/**
  * Secured service
  * @param  {[type]} req [description]
  * @param  {[type]} res [description]
@@ -101,9 +114,14 @@ exports.testProtected = function (req, res) {
       error: 'Forbidden'
     });
   }
-
 };
 
+/**
+ * [testProtectedApiKey description]
+ * @param  {[type]} req [description]
+ * @param  {[type]} res [description]
+ * @return {[type]}     [description]
+ */
 exports.testProtectedApiKey = function (req, res) {
   if (req.organization) {
     util.sendResponse(req, res, 200, {
@@ -126,13 +144,14 @@ exports.testProtectedApiKey = function (req, res) {
 exports.testCreateUser = function (req, res) {
   var user = req.body;
   user.delete_from = new Date(); // Set expiration (test users can be deleted)
+  user.organization = ObjectID(user.organization);
   Users.create(user, function (err, usr) {
     if (err) {
       util.sendResponse(req, res, err.status, {
         error: req.i18n.__(err.key)
       });
     } else {
-      util.sendResponse(req, res, 201, usr);
+      util.sendResponse(req, res, 201, usr.ops[0]);
     }
   })
 
