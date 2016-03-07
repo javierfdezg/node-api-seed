@@ -124,7 +124,7 @@ exports.randomToken = function (cb) {
 exports.allow = function (user, accessLevel) {
   var al = (accessLevel !== undefined) ? accessLevel : security.accessLevels.public;
   var role = (user && user.role !== undefined) ? user.role : security.userRoles.public;
-  return (al & role);
+  return ((al & role) > 0);
 };
 
 /**
@@ -143,7 +143,7 @@ exports.beforeLastIndex = function (str, delimiter) {
  * @return {[type]}          [description]
  */
 exports.fileToCollectionName = function (fileName) {
-  return changeCase.snakeCase(module.exports.beforeLastIndex(fileName, '.'));
+  return changeCase.snakeCase(module.exports.beforeLastIndex(fileName.toLowerCase(), '.'));
 };
 
 /**

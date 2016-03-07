@@ -82,7 +82,6 @@ function initialize(config, cb) {
       // Export model with the Class Name
       className = util.collectionToClassName(collectionName);
       module.exports[className] = model;
-      winston.info("Initializing '%s' model for '%s' collection", className, collectionName);
     }
   }
 
