@@ -33,6 +33,20 @@ module.exports.userRoles = userRoles;
 module.exports.accessLevels = accessLevels;
 
 /**
+ * Returns an array of available roles
+ * @return {[type]} [description]
+ */
+module.exports.rolesList = function () {
+  var list = [];
+  var role;
+
+  for (role in userRoles) {
+    list.push(userRoles[role]);
+  }
+  return list;
+};
+
+/**
  * [checkSignature description]
  * @param  {[type]} req       [description]
  * @param  {[type]} signature [description]

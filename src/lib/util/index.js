@@ -170,3 +170,16 @@ exports.isEmptyObject = function (obj) {
   }
   return Object.keys(obj).length === 0 && JSON.stringify(obj) === JSON.stringify({});
 };
+
+/**
+ * Determines if the object is a valid MongoDB ObjectID
+ * @param  {[type]}  obj [description]
+ * @return {Boolean}     [description]
+ */
+exports.isObjectID = function (objID) {
+  if (objID.equals === undefined || typeof objID.equals !== 'function') return false;
+  if (objID.generate === undefined || typeof objID.generate !== 'function') return false;
+  if (objID.getTimestamp === undefined || typeof objID.getTimestamp !== 'function') return false;
+  if (objID.toHexString === undefined || typeof objID.toHexString !== 'function') return false;
+  return true;
+};

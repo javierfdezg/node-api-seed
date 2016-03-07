@@ -10,6 +10,7 @@
 
 var supertest = require('supertest'),
   util = require('../src/lib/util'),
+  ObjectID = require('mongodb').ObjectID,
   sinon = require('sinon');
 
 var sendResponseCallbackSpy = sinon.spy(); // Tip: reset in beforeEach zoo.sendResponseCallbackSpy.reset() if necesary
@@ -19,6 +20,22 @@ global.zoo = {
   host: '127.0.0.1', // API host
   port: '4000', // API port
   security: require('../src/lib/security'),
+  clone: function (add) {
+    var origin = {};
+    // Don't do anything if add isn't an object
+    if (!add || typeof add !== 'object') return origin;
+    var keys = Object.keys(add);
+    var i = keys.length;
+    while (i--) {
+      // Is a MongoDB ObjectID?
+      if (util.isObjectID(add[keys[i]])) {
+        origin[keys[i]] = ObjectID.createFromHexString(add[keys[i]].toString());
+      } else {
+        origin[keys[i]] = add[keys[i]];
+      }
+    }
+    return origin;
+  },
   getReq: function () {
     return {
       i18n: {

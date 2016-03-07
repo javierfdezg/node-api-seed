@@ -8,9 +8,10 @@
 
 var BaseModel = require('../base-model'),
   util = require('../../util'),
+  security = require('../../security'),
   inherits = require('util').inherits,
   winston = require('winston'),
-  ObjectId = require('mongodb').ObjectID,
+  ObjectID = require('mongodb').ObjectID,
   Tokens = require('../').Tokens;
 
 var Users = module.exports = function (options, conf) {
@@ -22,6 +23,39 @@ var Users = module.exports = function (options, conf) {
       expireAfterSeconds: conf.testobjectexpiration
     }
   }];
+
+  // Collection JSON Schema
+  this.schema = {
+    properties: {
+      organization: {
+        type: 'object',
+        required: true,
+        conform: function (objID) {
+          return util.isObjectID(objID);
+        }
+      }, //Type
+      fullName: {
+        type: 'string',
+        minLength: 3,
+        required: true
+      },
+      password: {
+        type: 'string',
+        minLength: 8,
+        required: true
+      },
+      email: {
+        type: 'string',
+        format: 'email',
+        required: true
+      },
+      role: {
+        type: 'integer',
+        required: true,
+        enum: security.rolesList()
+      }
+    }
+  };
 
   // Call Super constructor
   BaseModel.apply(this, arguments);
@@ -110,7 +144,7 @@ Users.prototype.searchByBearerToken = function (tk, cb) {
     } else if (tokenObject && tokenObject.value) {
       // Get user with id stored in token's record
       self.find({
-        _id: ObjectId(tokenObject.value.user)
+        _id: ObjectID(tokenObject.value.user)
       }).limit(1).next(function (err, userObject) {
         cb && cb(err, userObject);
       });

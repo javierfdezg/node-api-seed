@@ -70,6 +70,7 @@
     "node-env-configuration": "0.0.5",
     "q": "1.0.1",
     "response-time": "2.0.0",
+    "revalidator": "^0.3.1",
     "toobusy-js": "^0.4.3",
     "underscore": "~1.6.0",
     "winston": "0.7.3"

@@ -5,7 +5,8 @@
 /*jslint node: true */
 
 var winston = require('winston'),
-  util = require('util');
+  util = require('util'),
+  revalidator = require('revalidator');
 
 /**
  * Wrapper for MongoDB driver Collection().
@@ -63,6 +64,27 @@ BaseModel.prototype.getCollectionAndExecMethod = function (method, args) {
   var self = this;
   var coll = self.collection();
   return coll[method].apply(coll, args);
+};
+
+/**
+ * Validate model agains JSON Schema defined in property schema
+ * http://tools.ietf.org/html/draft-zyp-json-schema-04
+ * @param  {[type]} obj Object to validate
+ * @return {[type]} an object like this:
+ * {
+ *   valid: true, // or false
+ *   errors: [] // Array of errors if valid is false 
+ * }
+ **/
+BaseModel.prototype.validateSchema = function (obj) {
+  if (this.schema) {
+    return revalidator.validate(obj, this.schema);
+  } else {
+    return {
+      valid: true,
+      errors: []
+    };
+  }
 };
 
 /** Wrappers for MongoDB Collection node driver Class  */
