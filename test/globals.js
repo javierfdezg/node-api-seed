@@ -10,6 +10,7 @@
 
 var supertest = require('supertest'),
   util = require('../src/lib/util'),
+  validations = require('../src/lib/data/validations'),
   ObjectID = require('mongodb').ObjectID,
   sinon = require('sinon'),
   Chance = require('chance');
@@ -26,7 +27,9 @@ global.zoo = {
   sendResponseStub: sinon.stub(util, "sendResponse", sendResponseCallbackSpy),
   sendResponseCallbackSpy: sendResponseCallbackSpy,
   createOrganization: createOrganization,
-  createUserAndLogin: createUserAndLogin
+  createUserAndLogin: createUserAndLogin,
+  createUserInOrganization: createUserInOrganization,
+  createUser: createUser
 };
 
 // Create supertest instance
@@ -69,7 +72,35 @@ function createOrganization(cb) {
   });
 };
 
-function createUserAndLogin(role, cb) {
+function createUserInOrganization(role, organization, cb) {
+  var chance = new Chance();
+  var user;
+
+  user = {
+    organization: organization,
+    fullName: chance.string({
+      length: 8
+    }),
+    email: chance.email(),
+    password: chance.string({
+      length: 10
+    }),
+    role: role
+  };
+  zoo.api.post('/test/user')
+    .send(user)
+    .end(function (err, usr) {
+      if (err) {
+        cb && cb(err);
+      } else {
+        user._id = usr.body._id;
+        user.organization = usr.body.organization;
+        cb && cb(err, user);
+      }
+    });
+};
+
+function createUser(role, cb) {
   var chance = new Chance();
   var user;
 
@@ -82,9 +113,7 @@ function createUserAndLogin(role, cb) {
         fullName: chance.string({
           length: 8
         }),
-        email: chance.email({
-          domain: "example.com"
-        }),
+        email: chance.email(),
         password: chance.string({
           length: 10
         }),
@@ -96,15 +125,26 @@ function createUserAndLogin(role, cb) {
           if (err) {
             cb && cb(err);
           } else {
-            zoo.api.get('/auth/token')
-              .auth(user.email, user.password)
-              .end(function (err, token) {
-                if (err) {
-                  cb && cb(err);
-                } else {
-                  cb && cb(null, token.body.user, token.body.token);
-                }
-              });
+            user._id = usr.body._id;
+            cb && cb(err, user);
+          }
+        });
+    }
+  });
+};
+
+function createUserAndLogin(role, cb) {
+  createUser(role, function (err, user) {
+    if (err) {
+      cb && cb(err);
+    } else {
+      zoo.api.get('/auth/token')
+        .auth(user.email, user.password)
+        .end(function (err, token) {
+          if (err) {
+            cb && cb(err);
+          } else {
+            cb && cb(null, token.body.user, token.body.token);
           }
         });
     }
@@ -125,7 +165,7 @@ function clone(add) {
   var i = keys.length;
   while (i--) {
     // Is a MongoDB ObjectID?
-    if (util.isObjectID(add[keys[i]])) {
+    if (validations.ObjectID(add[keys[i]])) {
       origin[keys[i]] = ObjectID.createFromHexString(add[keys[i]].toString());
     } else {
       origin[keys[i]] = add[keys[i]];

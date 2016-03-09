@@ -24,9 +24,9 @@ var util = require('../../src/lib/util'),
         user = null;
       }
       if (query._id.toString() === '447f191e810c19729de860ea') {
-        user.organization = ObjectID("507f191e810c19729de860ea")
-      } else {
-        user.organization = ObjectID("307f191e810c19729de86000")
+        user.organization = ObjectID("507f191e810c19729de860ea");
+      } else if (user) {
+        user.organization = ObjectID("307f191e810c19729de86000");
       }
       return {
         limit: function (n) {
@@ -40,10 +40,18 @@ var util = require('../../src/lib/util'),
     }
   },
   data = {
-    'Users': UsersStub
+    'Users': UsersStub,
+    getModel: function (collectionName) {
+      if (collectionName === 'users') {
+        return UsersStub;
+      } else {
+        return undefined;
+      }
+    }
   },
   security = proxyquire('../../src/middleware/security', {
     '../lib/data/models/users': UsersStub,
+    '../lib/data': data,
     './../controllers/users': UsersControllerStub
   }),
   test = require('../../src/controllers/test'),
@@ -68,7 +76,7 @@ describe('Security middleware Unit Tests', function () {
     it('Should execute controller/action when organization is present in request', function (done) {
 
       var middleware = security.execAction('test', 'testProtectedApiKey', zoo.security.accessLevels.admin);
-      req.organization = {};
+      req.organizationObject = {};
       middleware(req, {}, function () {
         done('Controller action not found');
       });
@@ -137,6 +145,7 @@ describe('Security middleware Unit Tests', function () {
 
     it('Should fail (HTTP status 500) trying to route url that doesn\'t match any existing model', function (done) {
       req.path = "/model/447f191e810c19729de86000";
+      req.organization = ObjectID("507f191e810c19729de860ea");
       var middleware = security.checkOwnerAndExecAction('users', 'test', zoo.security.accessLevels.admin);
       middleware(req, {}, function () {
         done('Controller action not found');
@@ -148,11 +157,11 @@ describe('Security middleware Unit Tests', function () {
       done();
     });
 
-    it('Should fail (HTTP status 500) trying to route url that doesn\'t match any existing model (No model found)', function (done) {
+    it('Should fail (HTTP status 404) trying to route url that doesn\'t match any existing model (No model found)', function (done) {
       req.path = "/users/447f191e810c19729de86044";
-      req.organizationId = ObjectID("507f191e810c19729de860ea");
+      req.organization = ObjectID("507f191e810c19729de860ea");
       req.user = {
-        organization: req.organizationId,
+        organization: req.organization,
         role: zoo.security.userRoles.admin
       };
       var middleware = security.checkOwnerAndExecAction('users', 'test', zoo.security.accessLevels.admin);
@@ -161,29 +170,29 @@ describe('Security middleware Unit Tests', function () {
       });
 
       expect(spy.callCount).to.equal(0);
-      expect(zoo.sendResponseCallbackSpy.args[0][2]).to.equal(500);
+      expect(zoo.sendResponseCallbackSpy.args[0][2]).to.equal(404);
 
       done();
     });
 
     it('Should not execute controller/action on a model when no organization or user present in request', function (done) {
-      req.path = "/users/447f191e810c19729de86044";
+      req.path = "/users/447f191e810c19729de860ea";
       var middleware = security.checkOwnerAndExecAction('users', 'test', zoo.security.accessLevels.admin);
       middleware(req, {}, function () {
         done('Controller action not found');
       });
 
       expect(spy.callCount).to.equal(0);
-      expect(zoo.sendResponseCallbackSpy.args[0][2]).to.equal(500);
+      expect(zoo.sendResponseCallbackSpy.args[0][2]).to.equal(403);
 
       done();
     });
 
     it('Should not execute controller/action on a model which organization is diferent from request organization and return HTTP 403 Forbidden', function (done) {
       req.path = "/users/447f191e810c19729de860ea";
-      req.organizationId = ObjectID("577f191e810c19729de860ea");
+      req.organization = ObjectID("577f191e810c19729de860ea");
       req.user = {
-        organization: req.organizationId,
+        organization: req.organization,
         role: zoo.security.userRoles.admin
       };
       var middleware = security.checkOwnerAndExecAction('users', 'test', zoo.security.accessLevels.admin);
@@ -197,9 +206,9 @@ describe('Security middleware Unit Tests', function () {
 
     it('Should not execute controller/action on a model which organization is diferent from request user\'s organization', function (done) {
       req.path = "/users/447f191e810c19729de860ea";
-      req.organizationId = ObjectID("577f191e810c19729de860ea");
-      req.organization = {
-        _id: req.organizationId
+      req.organization = ObjectID("577f191e810c19729de860ea");
+      req.organizationObject = {
+        _id: req.organization
       };
       var middleware = security.checkOwnerAndExecAction('users', 'test', zoo.security.accessLevels.admin);
       middleware(req, {}, function () {
@@ -212,9 +221,9 @@ describe('Security middleware Unit Tests', function () {
 
     it('Should execute controller/action on a model which organization is equal to request organization', function (done) {
       req.path = "/users/447f191e810c19729de860ea";
-      req.organizationId = ObjectID("507f191e810c19729de860ea");
-      req.organization = {
-        _id: req.organizationId
+      req.organization = ObjectID("507f191e810c19729de860ea");
+      req.organizationObject = {
+        _id: req.organization
       };
       var middleware = security.checkOwnerAndExecAction('users', 'test', zoo.security.accessLevels.admin);
       middleware(req, {}, function () {
@@ -227,9 +236,9 @@ describe('Security middleware Unit Tests', function () {
 
     it('Should execute controller/action on a model which organization is equal to request user\'s organization', function (done) {
       req.path = "/users/447f191e810c19729de860ea";
-      req.organizationId = ObjectID("507f191e810c19729de860ea");
+      req.organization = ObjectID("507f191e810c19729de860ea");
       req.user = {
-        organization: req.organizationId,
+        organization: req.organization,
         role: zoo.security.userRoles.admin
       };
       var middleware = security.checkOwnerAndExecAction('users', 'test', zoo.security.accessLevels.admin);

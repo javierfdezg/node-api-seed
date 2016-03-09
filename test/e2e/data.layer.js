@@ -20,9 +20,7 @@ describe('API data layer', function () {
 
       var chance = new Chance();
       var user = {
-        email: chance.email({
-          domain: "example.com"
-        }),
+        email: chance.email(),
         password: chance.string()
       };
 
@@ -30,7 +28,7 @@ describe('API data layer', function () {
       zoo.api.post('/test/user')
         .send(user)
         .end(function (err, res) {
-          if (err) throw err;
+          expect(err).to.be.null;
           // Create user
           zoo.api.post('/test/user').send(user).expect(400, done);
         });

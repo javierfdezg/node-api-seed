@@ -38,7 +38,7 @@ describe('API security layer', function () {
         .set('Authorization', 'Bearer ' + token)
         .expect(200)
         .end(function (err, res) {
-          if (err) throw err;
+          expect(err).to.be.null;
           expect(res.body).to.have.deep.property('secured.email', user.email);
           done();
         });
@@ -69,13 +69,10 @@ describe('API security layer', function () {
     before(function (done) {
       // Create organization
       zoo.createOrganization(function (err, org) {
-        if (err) {
-          done(err);
-        } else {
-          organization = org;
-          pair1 = organization.apiKeys[0];
-          done();
-        }
+        expect(err).to.be.null;
+        organization = org;
+        pair1 = organization.apiKeys[0];
+        done();
       });
     });
 
@@ -262,13 +259,10 @@ describe('API security layer', function () {
       before(function (done) {
         // Create organization
         zoo.createUserAndLogin(zoo.security.userRoles.readonly, function (err, createdUser, createdToken) {
-          if (err) {
-            done(err);
-          } else {
-            roUser = createdUser;
-            roToken = createdToken;
-            done();
-          }
+          expect(err).to.be.null;
+          roUser = createdUser;
+          roToken = createdToken;
+          done();
         });
       });
 
@@ -314,13 +308,10 @@ describe('API security layer', function () {
       before(function (done) {
         // Create organization
         zoo.createUserAndLogin(zoo.security.userRoles.admin, function (err, createdUser, createdToken) {
-          if (err) {
-            done(err);
-          } else {
-            adminUser = createdUser;
-            adminToken = createdToken;
-            done();
-          }
+          expect(err).to.be.null;
+          adminUser = createdUser;
+          adminToken = createdToken;
+          done();
         });
       });
 
@@ -377,13 +368,10 @@ describe('API security layer', function () {
       before(function (done) {
         // Create organization
         zoo.createUserAndLogin(zoo.security.userRoles.root, function (err, createdUser, createdToken) {
-          if (err) {
-            done(err);
-          } else {
-            rootUser = createdUser;
-            rootToken = createdToken;
-            done();
-          }
+          expect(err).to.be.null;
+          rootUser = createdUser;
+          rootToken = createdToken;
+          done();
         });
       });
 

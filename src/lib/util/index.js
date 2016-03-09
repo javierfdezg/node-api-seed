@@ -128,6 +128,19 @@ exports.allow = function (user, accessLevel) {
 };
 
 /**
+ * Request user/app owns the entity?
+ * @param  {[type]} req    [description]
+ * @param  {[type]} entity [description]
+ * @return {[type]}        [description]
+ */
+exports.owns = function (req, entity) {
+  // Root access level OR user/app organization is the same than entity organization
+  return ((req.user && module.exports.allow(req.user, security.accessLevels.root)) ||
+    (entity.organization !== undefined && entity.organization.equals !== undefined &&
+      entity.organization.equals(req.organization)));
+};
+
+/**
  * Remove last part in string based on delimiter. For example, it can remove extension from a file name
  * @param  {[type]} str       [description]
  * @param  {[type]} delimiter [description]
@@ -169,17 +182,4 @@ exports.isEmptyObject = function (obj) {
     return true;
   }
   return Object.keys(obj).length === 0 && JSON.stringify(obj) === JSON.stringify({});
-};
-
-/**
- * Determines if the object is a valid MongoDB ObjectID
- * @param  {[type]}  obj [description]
- * @return {Boolean}     [description]
- */
-exports.isObjectID = function (objID) {
-  if (objID.equals === undefined || typeof objID.equals !== 'function') return false;
-  if (objID.generate === undefined || typeof objID.generate !== 'function') return false;
-  if (objID.getTimestamp === undefined || typeof objID.getTimestamp !== 'function') return false;
-  if (objID.toHexString === undefined || typeof objID.toHexString !== 'function') return false;
-  return true;
 };

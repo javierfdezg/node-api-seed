@@ -59,6 +59,16 @@ module.exports = function (app, config, cb) {
 };
 
 /**
+ * Get model based on collection name
+ * @param  {[type]} collectionName [description]
+ * @return {[type]}                [description]
+ */
+module.exports.getModel = function (collectionName) {
+  var className = util.collectionToClassName(collectionName);
+  return module.exports[className];
+};
+
+/**
  * Init mongoDB indexes and Models found under 'models' directory
  * @param  {Function} cb [description]
  * @return {[type]}      [description]

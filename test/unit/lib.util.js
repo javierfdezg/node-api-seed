@@ -114,6 +114,38 @@ describe('Util module unit tests', function () {
     })
   });
 
+  describe('owns', function () {
+    it('Should return always true for root', function (done) {
+      expect(util.owns({
+        user: {
+          role: security.accessLevels.root
+        }
+      }, {
+        organization: new ObjectID()
+      })).to.be.true;
+      done();
+    });
+
+    it('Should return true it user organization is the same than the entity organization', function (done) {
+      var organizationId = new ObjectID();
+      expect(util.owns({
+        organization: organizationId
+      }, {
+        organization: organizationId
+      })).to.be.true;
+      done();
+    });
+
+    it('Should return false it user organization is not the same than the entity organization', function (done) {
+      expect(util.owns({
+        organization: new ObjectID()
+      }, {
+        organization: new ObjectID()
+      })).to.be.false;
+      done();
+    });
+  });
+
   describe('beforeLastIndex', function () {
     it('Should remove extension from a file', function (done) {
       expect(util.beforeLastIndex('file-name.jpg', '.')).to.equal('file-name');
@@ -200,22 +232,6 @@ describe('Util module unit tests', function () {
       })).to.be.false;
       done();
     });
-  });
-
-  describe('isObjectID', function () {
-
-    it('Should return true for an ObjectID', function (done) {
-      expect(util.isObjectID(new ObjectID())).to.be.true;
-      done();
-    });
-
-    it('Should return false for an Object', function (done) {
-      expect(util.isObjectID({
-        name: 'Name'
-      })).to.be.false;
-      done();
-    });
-
   });
 
 });

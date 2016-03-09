@@ -12,7 +12,9 @@ var BaseModel = require('../base-model'),
   inherits = require('util').inherits,
   winston = require('winston'),
   ObjectID = require('mongodb').ObjectID,
-  Tokens = require('../').Tokens;
+  Tokens = require('../').Tokens,
+  transform = require('../transformations'),
+  validations = require('../validations');
 
 var Users = module.exports = function (options, conf) {
 
@@ -22,18 +24,29 @@ var Users = module.exports = function (options, conf) {
     options: {
       expireAfterSeconds: conf.testobjectexpiration
     }
+  }, {
+    fieldOrSpec: {
+      email: 1
+    },
+    options: {
+      unique: true,
+      w: 1
+    }
   }];
 
   // Collection JSON Schema
   this.schema = {
     properties: {
+      _id: {
+        type: 'string',
+        required: false, // Not required in post
+        conform: validations.hexadecimalStringObjectID
+      },
       organization: {
-        type: 'object',
+        type: 'string',
         required: true,
-        conform: function (objID) {
-          return util.isObjectID(objID);
-        }
-      }, //Type
+        conform: validations.hexadecimalStringObjectID
+      },
       fullName: {
         type: 'string',
         minLength: 3,
@@ -53,6 +66,42 @@ var Users = module.exports = function (options, conf) {
         type: 'integer',
         required: true,
         enum: security.rolesList()
+      },
+      delete_from: {
+        type: 'string',
+        format: 'date-time',
+        required: false
+      },
+      created_at: {
+        type: 'string',
+        format: 'date-time',
+        required: false
+      },
+      updated_at: {
+        type: 'string',
+        format: 'date-time',
+        required: false
+      }
+    }
+  };
+
+  // Model transformations (from JSON to Javascript)
+  this.transformations = {
+    properties: {
+      _id: {
+        transform: transform.mongoObjectID
+      },
+      organization: {
+        transform: transform.mongoObjectID
+      },
+      delete_from: {
+        transform: transform.javascriptDate
+      },
+      created_at: {
+        transform: transform.javascriptDate
+      },
+      updated_at: {
+        transform: transform.javascriptDate
       }
     }
   };
@@ -102,9 +151,7 @@ Users.prototype.create = function (usr, cb) {
             usr.password = opts.key;
             usr.salt = opts.salt;
             // Insert new user in collection
-            self.insert(usr, {
-              w: 1
-            }, function (err, userObject) {
+            self.insertOne(usr, function (err, userObject) {
               cb && cb(err, userObject);
             });
           }

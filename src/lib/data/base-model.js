@@ -6,7 +6,9 @@
 
 var winston = require('winston'),
   util = require('util'),
-  revalidator = require('revalidator');
+  revalidator = require('revalidator'),
+  transformations = require('./transformations'),
+  validations = require('./validations');
 
 /**
  * Wrapper for MongoDB driver Collection().
@@ -31,15 +33,8 @@ var BaseModel = module.exports = function (options, conf) {
   if (this.indexes) {
     for (i = 0; i < this.indexes.length; i++) {
       (function (index) {
-        self.collection(function (err, collection) {
-          if (err) {
-            throw new Error('Error getting collection ' + err.message);
-          } else {
-            collection.ensureIndex(index.fieldOrSpec, index.options, function (err) {
-              if (err) throw new Error(util.format('Error setting index %s for collection %s: %s', index.fieldOrSpec, self.collectionName, err.message));
-              winston.info('Set index %s for collection %s', index.fieldOrSpec, self.collectionName);
-            });
-          }
+        self.collection().ensureIndex(index.fieldOrSpec, index.options, function (err) {
+          if (err) throw new Error(util.format('Error setting index %s for collection %s: %s', index.fieldOrSpec, self.collectionName, err.message));
         });
       })(this.indexes[i]);
     }
@@ -68,7 +63,7 @@ BaseModel.prototype.getCollectionAndExecMethod = function (method, args) {
 
 /**
  * Validate model agains JSON Schema defined in property schema
- * https://github.com/flatiron/revalidator
+ * https: //github.com/flatiron/revalidator
  * http://tools.ietf.org/html/draft-zyp-json-schema-04
  * @param  {[type]} obj Object to validate
  * @return {[type]} an object like this:
@@ -78,14 +73,30 @@ BaseModel.prototype.getCollectionAndExecMethod = function (method, args) {
  * }
  **/
 BaseModel.prototype.validateSchema = function (obj) {
-  if (this.schema) {
-    return revalidator.validate(obj, this.schema);
-  } else {
-    return {
-      valid: true,
-      errors: []
-    };
+  return validations.validateSchema(obj, this.schema);
+};
+
+/**
+ * Validate and apply json casting of properties defined in this.transformations
+ * @param  {[type]} obj [description]
+ * @return {[type]}     [description]
+ */
+BaseModel.prototype.validateAndTransform = function (obj) {
+  var validate = this.validateSchema(obj);
+  // If is a valid object, and has an schema, convert types (apply transformations)
+  if (validate.valid) {
+    this.transform(obj);
   }
+  return validate;
+};
+
+/**
+ * Apply transformations defined in this.transformations
+ * @param  {[type]} obj [description]
+ * @return {[type]}     [description]
+ */
+BaseModel.prototype.transform = function (obj) {
+  transformations.transform(obj, this.transformations);
 };
 
 /** Wrappers for MongoDB Collection node driver Class  */

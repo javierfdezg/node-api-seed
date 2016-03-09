@@ -97,6 +97,13 @@ module.exports = function (app, config) {
   authenticateRouter.get('/token', timeout(2000), authController.token);
   // ----------------------------------------------------------------------
 
+  // --------------------------- USERS SERVICES ----------------------------
+  router.get('/users/:id', timeout(2000), security.checkOwnerAndExecAction('users', 'get', auth.accessLevels.admin));
+  router.post('/users', timeout(2000), security.execAction('users', 'post', auth.accessLevels.admin));
+  router.put('/users/:id', timeout(2000), security.checkOwnerAndExecAction('users', 'put', auth.accessLevels.admin));
+  router["delete"]('/users/:id', timeout(2000), security.checkOwnerAndExecAction('users', 'del', auth.accessLevels.admin));
+  // ----------------------------------------------------------------------
+
   // --------------------------- API ROUTES -------------------------------
   require('./apiRoutes')(app, config, router);
   // ----------------------------------------------------------------------
