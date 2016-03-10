@@ -44,6 +44,27 @@ describe('API security layer', function () {
         });
     });
 
+    it('Should return 401 (Invalid token)', function (done) {
+      zoo.api.get('/test/protected')
+        .set('Authorization', 'Bearer invalidToken1283')
+        .expect(401)
+        .end(done);
+    });
+
+    it('Should return 403 Bad Request (Unknown authorization header. Only bearer token are supported)', function (done) {
+      zoo.api.get('/test/protected')
+        .set('Authorization', 'Besarer 12341231341d')
+        .expect(403)
+        .end(done);
+    });
+
+    it('Should return 403 Bad Request (Unknown authorization header. Only bearer token are supported)', function (done) {
+      zoo.api.get('/test/protected')
+        .set('Authorization', 'baz')
+        .expect(403)
+        .end(done);
+    });
+
   });
 
   describe('API Key/secret', function () {
@@ -424,7 +445,9 @@ describe('API security layer', function () {
   });
 
   describe('Model Ownership Check', function () {
+    xit('TODO', function () {
 
+    });
   });
 
 });
