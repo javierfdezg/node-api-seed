@@ -74,6 +74,9 @@ module.exports = function (app, config) {
   authenticateRouter.use(i18nm);
   testRouter.use(i18nm);
 
+  // Add X-Response-Time header (response time) in every response
+  app.use(responseTime());
+
   // ------------------------- TEST ONLY SERVICES -------------------------
   testRouter.get('/timeout', timeout(1000), test.testTimeout); // test timeout middleware
   testRouter.get('/exception', timeout(1000), test.testUnhandledException); // test UnhandledException
@@ -107,9 +110,6 @@ module.exports = function (app, config) {
   // --------------------------- API ROUTES -------------------------------
   require('./apiRoutes')(app, config, router);
   // ----------------------------------------------------------------------
-
-  // Add X-Response-Time header (response time) in every response
-  app.use(responseTime());
 
   // Use this before each middleware
   app.use(haltOnTimedout);
