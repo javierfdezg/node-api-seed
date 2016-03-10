@@ -52,6 +52,9 @@ module.exports = function (app, config) {
     });
   });
 
+  // Add X-Response-Time header (response time) in every response
+  app.use(responseTime());
+  
   // Body parser
   router.use(bodyParser.json());
   authenticateRouter.use(bodyParser.json());
@@ -73,9 +76,6 @@ module.exports = function (app, config) {
   router.use(i18nm);
   authenticateRouter.use(i18nm);
   testRouter.use(i18nm);
-
-  // Add X-Response-Time header (response time) in every response
-  app.use(responseTime());
 
   // ------------------------- TEST ONLY SERVICES -------------------------
   testRouter.get('/timeout', timeout(1000), test.testTimeout); // test timeout middleware
