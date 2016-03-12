@@ -8,6 +8,7 @@
 "use strict";
 
 var util = require('../../src/lib/util'),
+  security = require('../../src/lib/security'),
   ObjectID = require('mongodb').ObjectID,
   express = require('express'),
   config = require('../../src/config/params'),
@@ -24,6 +25,8 @@ describe('Model Validations against JSON Schema', function () {
     role: 0x100
   };
   var Users;
+  var UsersRoot;
+  var UsersAdmin;
 
   before(function (done) {
     Users = require('../../src/lib/data')(express(), config.data, function (err) {
@@ -32,6 +35,8 @@ describe('Model Validations against JSON Schema', function () {
         winston.error(err.toString());
       } else {
         Users = require('../../src/lib/data').Users;
+        UsersRoot = require('../../src/lib/data').UsersRoot;
+        UsersAdmin = require('../../src/lib/data').UsersAdmin;
         done();
       }
     })
@@ -334,6 +339,43 @@ describe('Model Validations against JSON Schema', function () {
         expect(validations.ObjectID(true)).to.be.false;
         done();
       });
+    });
+  });
+
+  describe('Submodel Validations Helper', function () {
+    describe('validateSchema', function () {
+      it('Should not fail if user is valid UsersRoot Model', function (done) {
+        var user = zoo.clone(validUser);
+        user.role = security.userRoles.root;
+        var validation = UsersRoot.validateSchema(user);
+        expect(validation.valid).to.be.true;
+        done();
+      });
+
+      it('Should fail if user is not valid UsersRoot Model (Invalid role value)', function (done) {
+        var user = zoo.clone(validUser);
+        user.role = security.userRoles.admin; // Invalid role
+        var validation = UsersRoot.validateSchema(user);
+        expect(validation.valid).to.be.false;
+        done();
+      });
+
+      it('Should not fail if user is valid UsersAdmin Model', function (done) {
+        var user = zoo.clone(validUser);
+        user.role = security.userRoles.admin;
+        var validation = UsersAdmin.validateSchema(user);
+        expect(validation.valid).to.be.true;
+        done();
+      });
+
+      it('Should fail if user is not valid UsersAdmin Model (Invalid role value)', function (done) {
+        var user = zoo.clone(validUser);
+        user.role = security.userRoles.root; // Invalid role
+        var validation = UsersAdmin.validateSchema(user);
+        expect(validation.valid).to.be.false;
+        done();
+      });
+
     });
   });
 
