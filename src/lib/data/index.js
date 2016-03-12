@@ -74,8 +74,9 @@ module.exports.getModel = function (collectionName) {
  * @return {[type]}      [description]
  */
 function initialize(config, cb) {
-  var stat, modelsList, model, i;
+  var stat, modelsList, model, i, j;
   var Model, collectionName, className;
+  var submodels, Submodel, submodel, submodelClassName;
 
   // Get all models and init them
   modelsList = fs.readdirSync(__dirname + '/models');
@@ -92,9 +93,58 @@ function initialize(config, cb) {
       // Export model with the Class Name
       className = util.collectionToClassName(collectionName);
       module.exports[className] = model;
+      // Get submodel helpers if any
+      submodels = getSubmodelHelpersSync(__dirname + '/models/' + modelsList[i]);
+      for (j = 0; j < submodels.length; j++) {
+        Submodel = submodels[j].module;
+        submodelClassName = className + submodels[j].name;
+        submodel = new Submodel(model);
+        module.exports[submodelClassName] = submodel;
+      }
     }
   }
 
   // Callback
   cb && cb(null, module.exports);
+};
+
+/**
+ * [getSubmodelHelpersSync description]
+ * @param  {[type]} modelFilePath [description]
+ * @return {[type]}                  [description]
+ */
+function getSubmodelHelpersSync(modelFilePath) {
+  var submodels = [];
+  var stat, submodelsList, i, sbStat, Submodel,
+    className, collectionName;
+  // Check if submodels directory exists
+  if (modelFilePath) {
+
+    // Remove extension form file path
+    var submodelDir = util.beforeLastIndex(modelFilePath, '.');
+    try {
+      stat = fs.statSync(submodelDir);
+    } catch (ex) {
+      // No directory found
+    }
+    // If submodel dir exists, init submodels
+    if (stat && stat.isDirectory()) {
+      submodelsList = fs.readdirSync(submodelDir);
+      for (i = 0; i < submodelsList.length; i++) {
+        stat = fs.statSync(submodelDir + '/' + submodelsList[i]);
+        if (stat.isFile()) {
+          Submodel = require(submodelDir + '/' + submodelsList[i]);
+          collectionName = (Submodel.collectionName !== undefined) ? Submodel.collectionName : util.fileToCollectionName(submodelsList[i]);
+          className = util.collectionToClassName(collectionName);
+          submodels.push({
+            name: className,
+            module: Submodel
+          });
+        }
+      }
+    }
+
+  }
+
+  return submodels;
 };
