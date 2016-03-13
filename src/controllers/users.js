@@ -104,48 +104,56 @@ function saveOrUpdate(user, req, res) {
   // If user to update doesn't have organization, assign user's organization
   else {
     user.organization = (user.organization) ? user.organization : req.organization.toString();
-    validation = Users.validateAndTransform(user);
-    if (validation.valid) {
-      if (!update) {
-        user.created_at = new Date();
-      }
-      user.updated_at = new Date();
-      // Has the user permission in the updated user's company
-      if (!util.owns(req, user)) {
-        util.sendResponse(req, res, 403, {
-          error: req.i18n.__('Forbidden')
+    // Model validations and transfor (cast json plain types to js types)
+    Users.validateAndTransform(user, function (err, validation) {
+      if (err) {
+        // Unknown error
+        winston.error("Error in Users.validateAndTransform: %s", err.stack);
+        util.sendResponse(req, res, 500, {
+          error: req.i18n.__('There was an unknown error. Try again please')
         });
+      } else if (validation.valid) {
+        if (!update) {
+          user.created_at = new Date();
+        }
+        user.updated_at = new Date();
+        // Has the user permission in the updated user's company
+        if (!util.owns(req, user)) {
+          util.sendResponse(req, res, 403, {
+            error: req.i18n.__('Forbidden')
+          });
+        } else {
+          // Save or Update user
+          Users.findOneAndUpdate({
+            _id: (update) ? user._id : new ObjectID() // New ObjectID or existing one for updates
+          }, user, {
+            upsert: true,
+            returnOriginal: false // return updated user
+          }, function (err, updatedUser) {
+            // Unique contraint violation (email)
+            if (err && err.name === 'MongoError' && err.code === 11000) {
+              // Duplicate email
+              util.sendResponse(req, res, 400, {
+                error: req.i18n.__('Email %s is already taken by another user. Please use a different email', user.email)
+              });
+            } else if (err || !updatedUser.value) {
+              // Unknown error
+              util.sendResponse(req, res, 500, {
+                error: req.i18n.__('There was an unknown error. Try again please')
+              });
+            } else {
+              // Return new or updated user
+              util.sendResponse(req, res, ((update) ? 200 : 201), updatedUser.value);
+            }
+          });
+        }
       } else {
-        // Save or Update user
-        Users.findOneAndUpdate({
-          _id: (update) ? user._id : new ObjectID() // New ObjectID or existing one for updates
-        }, user, {
-          upsert: true,
-          returnOriginal: false // return updated user
-        }, function (err, updatedUser) {
-          // Unique contraint violation (email)
-          if (err && err.name === 'MongoError' && err.code === 11000) {
-            // Duplicate email
-            util.sendResponse(req, res, 400, {
-              error: req.i18n.__('Email %s is already taken by another user. Please use a different email', user.email)
-            });
-          } else if (err || !updatedUser.value) {
-            // Unknown error
-            util.sendResponse(req, res, 500, {
-              error: req.i18n.__('There was an unknown error. Try again please')
-            });
-          } else {
-            // Return new or updated user
-            util.sendResponse(req, res, ((update) ? 200 : 201), updatedUser.value);
-          }
+        // Model validation errors
+        util.sendResponse(req, res, 400, {
+          error: req.i18n.__('Invalid user. Fix errors and try again'),
+          errors: validation.errors
         });
       }
-    } else {
-      // Model validation errors
-      util.sendResponse(req, res, 400, {
-        error: req.i18n.__('Invalid user. Fix errors and try again'),
-        errors: validation.errors
-      });
-    }
+    });
   }
 };

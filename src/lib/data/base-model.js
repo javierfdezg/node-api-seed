@@ -62,6 +62,30 @@ BaseModel.prototype.getCollectionAndExecMethod = function (method, args) {
 };
 
 /**
+ * Validates model (schema and specific model validations)
+ * @param  {[type]} obj [description]
+ * @return {[type]}     [description]
+ */
+BaseModel.prototype.validate = function (obj, cb) {
+  var validateModel;
+  var validate = this.validateSchema(obj);
+  // If model especific validate function exists apply
+  if (this.validateModel && typeof this.validateModel === 'function') {
+    this.validateModel(obj, function (err, validateModel) {
+      if (err) {
+        cb && cb(err);
+      } else {
+        validate.valid = validate.Modelvalid && validateModel.valid;
+        validate.errors.push(validateModel.errors);
+        cb && cb(null, validate);
+      }
+    });
+  } else  {
+    cb && cb(null, validate);
+  }
+};
+
+/**
  * Validate model agains JSON Schema defined in property schema
  * https: //github.com/flatiron/revalidator
  * http://tools.ietf.org/html/draft-zyp-json-schema-04
@@ -81,13 +105,19 @@ BaseModel.prototype.validateSchema = function (obj) {
  * @param  {[type]} obj [description]
  * @return {[type]}     [description]
  */
-BaseModel.prototype.validateAndTransform = function (obj) {
-  var validate = this.validateSchema(obj);
-  // If is a valid object, and has an schema, convert types (apply transformations)
-  if (validate.valid) {
-    this.transform(obj);
-  }
-  return validate;
+BaseModel.prototype.validateAndTransform = function (obj, cb) {
+  var self = this;
+  this.validate(obj, function (err, validate) {
+    // If is a valid object, and has an schema, convert types (apply transformations)
+    if (err) {
+      cb && cb(err);
+    } else if (validate.valid) {
+      self.transform(obj);
+      cb && cb(null, validate);
+    } else {
+      cb && cb(null, validate);
+    }
+  });
 };
 
 /**
