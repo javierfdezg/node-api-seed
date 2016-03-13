@@ -364,7 +364,8 @@ module.exports.checkOwnerAndExecAction = function (controller, action, accessLev
                 error: req.i18n.__('No model found')
               });
             } else if (util.owns(req, entity)) {
-              // Call execAction
+              // Save in req and Call execAction
+              req.entity = entity;
               module.exports.execAction(controller, action, accessLevel)(req, res, next);
             } else {
               util.sendResponse(req, res, 403, {
