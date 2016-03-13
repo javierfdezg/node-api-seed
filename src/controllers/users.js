@@ -95,7 +95,7 @@ function saveOrUpdate(user, req, res) {
       error: req.i18n.__('Organization is required')
     });
   }
-  // If user doesn't have organization (¿Is posible?)
+  // If user doesn't have organization (It is posible?)
   else if (!req.organization) {
     util.sendResponse(req, res, 400, {
       error: req.i18n.__('Organization is required')
