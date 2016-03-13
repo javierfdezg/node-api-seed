@@ -75,7 +75,7 @@ BaseModel.prototype.validate = function (obj, cb) {
       if (err) {
         cb && cb(err);
       } else {
-        validate.valid = validate.Modelvalid && validateModel.valid;
+        validate.valid = validate.valid && validateModel.valid;
         validate.errors.push(validateModel.errors);
         cb && cb(null, validate);
       }
