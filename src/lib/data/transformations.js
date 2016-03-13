@@ -13,7 +13,8 @@ module.exports.transform = function (obj, transf) {
   if (transf && transf.properties) {
     for (prop in transf.properties) {
       // Any transformation defined for current property?
-      if (transf.properties[prop].transform !== undefined && typeof transf.properties[prop].transform === 'function' && obj[prop] !== undefined) {
+      if (transf.properties[prop].transform !== undefined &&
+        typeof transf.properties[prop].transform === 'function' && obj[prop] !== undefined) {
         obj[prop] = transf.properties[prop].transform(obj[prop]);
       }
       // Nested object
@@ -21,7 +22,7 @@ module.exports.transform = function (obj, transf) {
         // Arrays
         if (Object.prototype.toString.call(obj[prop]) === '[object Array]') {
           for (i = 0; i < obj[prop].length; i++) {
-            module.exports.transform(obj[prop][i], transf);
+            module.exports.transform(obj[prop][i], transf.properties[prop]);
           }
         } else {
           module.exports.transform(obj[prop], transf.properties[prop]);

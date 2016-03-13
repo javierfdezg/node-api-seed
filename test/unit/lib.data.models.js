@@ -74,15 +74,20 @@ describe('Model Validations against JSON Schema', function () {
         updated_at: new Date(),
         employees: 8302,
         locations: [{
-          localtion: 'California',
+          location: 'California',
           created_at: new Date(),
           id: new ObjectID(),
         }, {
-          localtion: 'New York',
+          location: 'New York',
           created_at: new Date(),
           id: new ObjectID()
         }]
-      }
+      },
+      deliveries: [{
+        mta_status: 'not-delivered',
+        send_from: new Date(),
+        content: 'Hello <b>Usuario</b>, welcome to bla bla bla'
+      }]
     };
 
     var ctransform = {
@@ -121,6 +126,19 @@ describe('Model Validations against JSON Schema', function () {
               }
             }
           }
+        },
+        deliveries: {
+          properties: {
+            confirmed_by_mta: {
+              transform: transformations.javascriptDate
+            },
+            delivered_to_mta: {
+              transform: transformations.javascriptDate
+            },
+            send_from: {
+              transform: transformations.javascriptDate
+            }
+          }
         }
       }
     };
@@ -128,7 +146,7 @@ describe('Model Validations against JSON Schema', function () {
     it('Should parse or transform a simple object containing ObjectIDs and Dates', function (done) {
       var jsonObject = JSON.stringify(object);
       var parsedObject = JSON.parse(jsonObject);
-      transformations.transform(parsedObject, transform)
+      transformations.transform(parsedObject, transform);
       expect(parsedObject).to.deep.equal(object);
       done();
     });
@@ -136,7 +154,7 @@ describe('Model Validations against JSON Schema', function () {
     it('Should parse or transform an complex object containing ObjectIDs and Dates', function (done) {
       var jsonObject = JSON.stringify(cobject);
       var parsedObject = JSON.parse(jsonObject);
-      transformations.transform(parsedObject, ctransform)
+      transformations.transform(parsedObject, ctransform);
       expect(parsedObject).to.deep.equal(cobject);
       done();
     });
