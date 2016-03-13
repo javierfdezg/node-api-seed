@@ -29,7 +29,7 @@ describe('Model Validations against JSON Schema', function () {
   var UsersAdmin;
 
   before(function (done) {
-    Users = require('../../src/lib/data')(express(), config.data, function (err) {
+    require('../../src/lib/data')(express(), config.data, function (err) {
       // No data connection available
       if (err) {
         winston.error(err.toString());

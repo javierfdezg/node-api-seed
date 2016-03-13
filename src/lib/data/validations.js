@@ -20,7 +20,7 @@ module.exports.validateSchema = function (obj, schema) {
 };
 
 /**
- * Checks if string is a valid hexadecimal representation of an ObjectID
+ * Check if string is a valid hexadecimal representation of an ObjectID
  * @param  {[type]} obj [description]
  * @return {[type]}     [description]
  */
@@ -35,7 +35,7 @@ module.exports.hexadecimalStringObjectID = function (obj) {
 };
 
 /**
- * Determines if the object is a valid MongoDB ObjectID
+ * Check if the object is a valid MongoDB ObjectID
  * @param  {[type]}  obj [description]
  * @return {Boolean}     [description]
  */
