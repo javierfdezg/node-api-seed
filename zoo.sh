@@ -94,8 +94,10 @@ init() {
     if ask "This directory seems to have been initialized. Reinitialize?" Y; then
       init_aux
     else
-      exit 1;
+      exit 1
     fi
+  else
+    init_aux
   fi
 
 }
@@ -154,7 +156,7 @@ fi
 
 case $1 in
     init)
-      init $2;;
+      init;;
     update)
       update;;
     upgrade)
@@ -172,7 +174,4 @@ case $1 in
     *)
       help;;
 esac
-
-
-
 
