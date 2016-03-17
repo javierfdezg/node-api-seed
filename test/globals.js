@@ -13,7 +13,9 @@ var supertest = require('supertest'),
   validations = require('../src/lib/data/validations'),
   ObjectID = require('mongodb').ObjectID,
   sinon = require('sinon'),
-  Chance = require('chance');
+  Chance = require('chance'),
+  chai = require('chai');
+chai.use(require('chai-datetime'));
 
 var sendResponseCallbackSpy = sinon.spy(); // Tip: reset in beforeEach zoo.sendResponseCallbackSpy.reset() if necesary
 
@@ -189,5 +191,5 @@ function getReq() {
 };
 
 // Global BDD functions
-global.expect = require('chai').expect;
-global.should = require('chai').should;
+global.expect = chai.expect;
+global.should = chai.should;
