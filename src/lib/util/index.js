@@ -193,3 +193,31 @@ exports.isEmptyObject = function (obj) {
 exports.randomIntegerBetween = function (min, max)  {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
+
+/**
+ * Generates a random date from the past
+ * @param  {[type]} seconds [optional] The date will be between (now - seconds) and now
+ * @return {[type]}         [description]
+ */
+exports.randomOldDate = function (seconds)  {
+  // If not provided, generate a random decrement between 0 and 1 year
+  var secs = seconds ? seconds : module.exports.randomIntegerBetween(0, 31536000);
+  var secondsDecrement = module.exports.randomIntegerBetween(0, secs);
+  var date = new Date(Date.now() - (secondsDecrement * 1000));
+  return date;
+};
+
+/**
+ * Generates a random date from the future
+ * @param  {[type]} seconds [optional] The date will be between now and (now + seconds)
+ * @param  {[type]} increment [optional] If provided, sum this number of seconds to generated date
+ * @return {[type]}           [description]
+ */
+exports.randomDateInFuture = function (increment, seconds)  {
+  // If not provided, generate a random increment between 0 and 1 year
+  var secs = seconds ? seconds : module.exports.randomIntegerBetween(0, 31536000);
+  var secondsIncrement = module.exports.randomIntegerBetween(0, secs);
+  var inc = increment ? increment : 0;
+  var date = new Date(Date.now() + (secondsIncrement * 1000) + (inc * 1000));
+  return date;
+};

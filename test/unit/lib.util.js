@@ -253,8 +253,29 @@ describe('Util module unit tests', function () {
 
     it('Should return 30 integers between -121 and -115', function (done) {
       var i;
-      for (i = 0; i < 10; i++) {
+      for (i = 0; i < 30; i++) {
         expect(util.randomIntegerBetween(-121, -115)).to.be.within(-121, -115);
+      }
+      done();
+    });
+  });
+
+  describe('randomOldDate', function () {
+    it('Should generate 40 random dates before now', function (done) {
+      var i;
+      for (i = 0; i < 40; i++) {
+        expect(util.randomOldDate()).beforeTime(new Date());
+      }
+      done();
+    });
+  });
+
+  describe('randomDateInFuture', function () {
+    it('Should generate 40 random dates after now', function (done) {
+      var i;
+      for (i = 0; i < 40; i++) {
+        // Add 60 seconds of increment (avoid possible errors if date is very close to now)
+        expect(util.randomDateInFuture(60)).afterTime(new Date());
       }
       done();
     });
