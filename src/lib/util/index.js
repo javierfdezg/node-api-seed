@@ -183,3 +183,13 @@ exports.isEmptyObject = function (obj) {
   }
   return Object.keys(obj).length === 0 && JSON.stringify(obj) === JSON.stringify({});
 };
+
+/**
+ * Generates random integer between two number (including the two)
+ * @param  {[type]} min [description]
+ * @param  {[type]} max [description]
+ * @return {[type]}     [description]
+ */
+exports.randomIntegerBetween = function (min, max)  {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};

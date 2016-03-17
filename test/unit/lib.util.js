@@ -234,4 +234,30 @@ describe('Util module unit tests', function () {
     });
   });
 
+  describe('isEmptyObject', function () {
+    it('Should return 20 integers between 0 and 20', function (done) {
+      var i;
+      for (i = 0; i < 20; i++) {
+        expect(util.randomIntegerBetween(0, 20)).to.be.within(0, 20);
+      }
+      done();
+    });
+
+    it('Should return 10 integers between 5 and 10', function (done) {
+      var i;
+      for (i = 0; i < 10; i++) {
+        expect(util.randomIntegerBetween(5, 10)).to.be.within(5, 10);
+      }
+      done();
+    });
+
+    it('Should return 30 integers between -121 and -115', function (done) {
+      var i;
+      for (i = 0; i < 10; i++) {
+        expect(util.randomIntegerBetween(-121, -115)).to.be.within(-121, -115);
+      }
+      done();
+    });
+  });
+
 });
