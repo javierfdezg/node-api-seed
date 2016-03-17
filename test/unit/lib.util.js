@@ -281,4 +281,16 @@ describe('Util module unit tests', function () {
     });
   });
 
+  describe('checkEmailDomain', function () {
+    it('Should succeed', function (done) {
+      expect(util.checkEmailDomain('email@gmail.com', 'gmail.com')).to.be.true;
+      done();
+    });
+
+    it('Should fail', function (done) {
+      expect(util.checkEmailDomain('email@gmail.com', 'hotmail.com')).to.be.false;
+      done();
+    });
+  });
+
 });

@@ -221,3 +221,24 @@ exports.randomDateInFuture = function (increment, seconds)  {
   var date = new Date(Date.now() + (secondsIncrement * 1000) + (inc * 1000));
   return date;
 };
+
+/**
+ * Check if email domain == domain
+ * @param  {[type]} email Must be a valid email with domain suffix
+ * @param  {[type]} domain [description]
+ * @return {[type]}        [description]
+ */
+exports.checkEmailDomain = function (email, domain)  {
+  var parts;
+
+  if (!email || !domain) {
+    return false;
+  } else {
+    parts = email.split('@');
+    if (parts.length < 2) {
+      return false;
+    } else {
+      return domain === parts[1];
+    }
+  }
+};
