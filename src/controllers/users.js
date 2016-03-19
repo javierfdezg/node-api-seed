@@ -25,7 +25,7 @@ exports.get = function (req, res) {
     if (err) {
       winston.error("[API 500 ERROR] Error getting user %s: %s ", req.params.id, err.message);
       util.sendResponse(req, res, 500, {
-        error: "Unknown error"
+        error: req.i18n.__('There was an unknown error. Try again please')
       });
     } else {
       util.sendResponse(req, res, 200, user);
