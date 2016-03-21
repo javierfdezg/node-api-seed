@@ -7,7 +7,8 @@
 /*jshint -W030 */
 "use strict";
 
-var templateUtils = require('../../src/lib/util/templates');
+var templateUtils = require('../../src/lib/util/templates'),
+  _ = require('lodash');
 
 describe('Template Utils', function () {
 
@@ -65,6 +66,13 @@ describe('Template Utils', function () {
     it('Should extract n-level parameters from html template', function (done) {
       expect(templateUtils.extractParams(template3)).to.include.members(params3);
       expect(templateUtils.extractParams(template3)).to.have.lengthOf(params3.length);
+      done();
+    });
+
+    it('Should extract n-level parameters from 3 html templates in one unique call', function (done) {
+      var union = _.union(params1, params2, params3);
+      expect(templateUtils.extractParams(template1, template2, template3)).to.include.members(union);
+      expect(templateUtils.extractParams(template1, template2, template3)).to.have.lengthOf(union.length);
       done();
     });
 

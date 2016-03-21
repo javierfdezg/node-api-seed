@@ -7,18 +7,22 @@
 
 var winston = require('winston'),
   objectPath = require("object-path"),
+  _ = require('lodash'),
   hogan = require("hogan.js");
 
 /**
- * Extract required params for template
- * @param  template
+ * Extract required params for templates. Each param (can take n params) is considered as a template
  * @return An array with params
  */
-exports.extractParams = function (template) {
-  var params = template.match(/{{\s*[\w\.]+\s*}}/g)
-    .map(function (x) {
-      return x.match(/[\w\.]+/)[0];
-    });
+exports.extractParams = function () {
+  var i, params;
+
+  for (i = 0; i < arguments.length; i++) {
+    params = _.union(params, arguments[i].match(/{{\s*[\w\.]+\s*}}/g)
+      .map(function (x) {
+        return x.match(/[\w\.]+/)[0];
+      }));
+  }
 
   return params;
 };
