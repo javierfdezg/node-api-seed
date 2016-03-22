@@ -183,8 +183,8 @@ Users.prototype.searchByBearerToken = function (tk, cb) {
       updated_at: new Date(), // Increment time
     }
   }, {
-    'upsert': false,
-    'new': true
+    upsert: false,
+    returnOriginal: false
   }, function (err, tokenObject) {
     if (err) {
       cb && cb(err);
