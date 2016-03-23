@@ -23,6 +23,8 @@ var Organizations = module.exports = function (options, conf) {
   BaseModel.apply(this, arguments);
 };
 
+inherits(Organizations, BaseModel);
+
 Organizations.prototype.searchByAPIKey = function (key, cb) {
   var self = this;
   // Save the token
@@ -36,5 +38,3 @@ Organizations.prototype.searchByAPIKey = function (key, cb) {
     }
   }], cb);
 };
-
-inherits(Organizations, BaseModel);
