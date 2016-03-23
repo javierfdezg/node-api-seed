@@ -42,7 +42,7 @@ if (cluster.isMaster && config.clusterMode) {
   // production flag
   app.set("production", config.httpp == 80 && config.httpsp == 443);
 
-  // Disable X-Powered-By HTTP response header 
+  // Disable X-Powered-By HTTP response header
   app.disable('x-powered-by');
 
   // Create log directory if not exits (Sync call, acceptable on startup)
@@ -70,15 +70,6 @@ if (cluster.isMaster && config.clusterMode) {
 
       require('./config/shutdown')(app, config);
 
-      // HTTPS config
-      var options = {
-        ca: fs.readFileSync(config.ssl.servercapath),
-        key: fs.readFileSync(config.ssl.serverkeypath),
-        cert: fs.readFileSync(config.ssl.servercrtpath),
-        requestCert: false,
-        rejectUnauthorized: false
-      };
-
       // Start listening
       var httpServer = http.createServer(app).listen(config.httpp);
       winston.info("HTTP server started at %d port", config.httpp);
@@ -90,6 +81,16 @@ if (cluster.isMaster && config.clusterMode) {
       });
 
       if (config.activessl) {
+
+        // HTTPS config
+        var options = {
+          ca: fs.readFileSync(config.ssl.servercapath),
+          key: fs.readFileSync(config.ssl.serverkeypath),
+          cert: fs.readFileSync(config.ssl.servercrtpath),
+          requestCert: false,
+          rejectUnauthorized: false
+        };
+
         var httpsServer = https.createServer(options, app).listen(config.httpsp);
         winston.info("HTTPS server started at %d port", config.httpsp);
         // https://github.com/joyent/node/issues/7764
