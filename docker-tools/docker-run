@@ -16,7 +16,8 @@ else
   else
     # Create container
     echo -n "Container not found: creating new and running. "
-    docker run                          \
+    docker run                                \
+        -h ${projectName}                     \
         -p $apiPort:4000                      \
         -p 27017:27017                        \
         -v $srcDir:/usr/src                   \
