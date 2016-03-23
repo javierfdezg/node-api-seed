@@ -75,9 +75,9 @@ module.exports.sign = function (req, secret) {
 };
 
 module.exports.hmacsha1 = function (str, key) {
-  var buffer = new Buffer(str);
-  var keyBuffer = new Buffer(key);
-  return crypto.createHmac('sha1', key).update(str).digest('hex');
+  var buffer = new Buffer(str, 'utf8');
+  var keyBuffer = new Buffer(key, 'utf8');
+  return crypto.createHmac('sha1', keyBuffer).update(buffer).digest('hex');
 };
 
 module.exports.generateRandomKeySignature = function (length, cb) {
