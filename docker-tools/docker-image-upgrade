@@ -14,12 +14,13 @@ docker push whynotsoluciones/${projectName}-node
 
 # Note the name of the image and the latest ID to notify other users
 REPO="whynotsoluciones"
-IMAGE="${projecName}-node"
+IMAGE="${projectName}-node"
 TAG="latest"
 
 if [ ! -f `pwd`/.dockerimages ];
 then
   touch `pwd`/.dockerimages
+  echo "$REPO/$IMAGE:$TAG" > `pwd`/.dockerimages
 fi
 
 sed -i '' -e "s/.*${REPO}.*${IMAGE}.*${TAG}.*/${REPO}\/${IMAGE}:${TAG}|$(date +%s)/" `pwd`/.dockerimages
