@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2014 Why Not Soluciones, S.L.
- * Licensed under the Copyright license.
+ * Copyright (c) Why Not Soluciones, S.L.
  */
 
 /*jslint node: true */

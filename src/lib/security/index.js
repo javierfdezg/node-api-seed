@@ -6,7 +6,6 @@
 "use strict";
 
 var util = require('../util'),
-  winston = require('winston'),
   crypto = require('crypto');
 
 // Remember to update also in app/www/js/services/user.js
@@ -37,8 +36,7 @@ module.exports.accessLevels = accessLevels;
  * @return {[type]} [description]
  */
 module.exports.rolesList = function () {
-  var list = [];
-  var role;
+  var role, list = [];
 
   for (role in userRoles) {
     list.push(userRoles[role]);

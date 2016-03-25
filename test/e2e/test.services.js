@@ -1,10 +1,9 @@
 /*
  * Copyright (c) Why Not Soluciones, S.L.
- * Licensed under the Copyright license.
  */
 
 /*jslint node: true */
-/*global xit */
+/*global zoo */
 /*jshint -W030 */
 "use strict";
 
@@ -26,7 +25,7 @@ describe('API Test services', function () {
     this.timeout(5000);
     zoo.api.get('/test/long-time')
       .timeout(1000)
-      .end(function (err, res) {
+      .end(function (err) {
         if (err.timeout) {
           done();
         }

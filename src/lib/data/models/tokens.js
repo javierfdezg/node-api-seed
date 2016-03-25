@@ -6,8 +6,7 @@
 "use strict";
 
 var BaseModel = require('../base-model'),
-  inherits = require('util').inherits,
-  winston = require('winston');
+  inherits = require('util').inherits;
 
 var Tokens = module.exports = function (options, conf) {
 
@@ -45,7 +44,7 @@ Tokens.prototype.create = function (tkn, usr, cb) {
   }, function (err, tokenObject) {
     if (err) {
       cb && cb(err);
-    } else if (!tokenObject || tokenObject.ops === undefined || tokenObject.ops.length == 0) {
+    } else if (!tokenObject || tokenObject.ops === undefined || tokenObject.ops.length === 0) {
       cb && cb('Unknown error');
     } else {
       cb && cb(err, tokenObject.ops[0]);

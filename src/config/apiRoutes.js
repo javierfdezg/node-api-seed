@@ -1,16 +1,12 @@
 /*
- * Copyright (c) 2014 Why Not Soluciones, S.L.
- * Licensed under the Copyright license.
+ * Copyright (c) Why Not Soluciones, S.L.
  */
 
 /*jslint node: true */
 "use strict";
 var timeout = require('connect-timeout'),
-  winston = require('winston'),
-  path = require('path'),
   auth = require('../lib/security'),
-  security = require('../middleware/security'),
-  util = require('../lib/util');
+  security = require('../middleware/security');
 
 /**
  * Dinamyc routing based on Accept-Version header

@@ -1,14 +1,11 @@
 /*
  * Copyright (c) Why Not Soluciones, S.L.
- * Licensed under the Copyright license.
  */
 
 /*jslint node: true */
-/*global xit */
+/*global zoo, expect */
 /*jshint -W030 */
 "use strict";
-
-var Chance = require('chance');
 
 describe('API security layer', function () {
 

@@ -73,7 +73,7 @@ exports.testMemoryLeak = function (req, res) {
  */
 exports.testMongoConnection = function (req, res) {
   // Mongo connection
-  require('../lib/data')(null, null, function (err, conn) {
+  require('../lib/data')(null, null, function (err) {
     if (err) {
       util.sendResponse(req, res, 500, {
         error: 'No mongo connection available'
@@ -153,8 +153,7 @@ exports.testCreateUser = function (req, res) {
     } else {
       util.sendResponse(req, res, 201, usr.ops[0]);
     }
-  })
-
+  });
 };
 
 exports.testCreateOrganization = function (req, res) {
@@ -168,8 +167,7 @@ exports.testCreateOrganization = function (req, res) {
     } else {
       util.sendResponse(req, res, 201, org.ops[0]);
     }
-  })
-
+  });
 };
 
 /**

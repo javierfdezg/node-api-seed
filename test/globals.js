@@ -1,10 +1,9 @@
 /*
  * Copyright (c) Why Not Soluciones, S.L.
- * Licensed under the Copyright license.
  */
 
 /*jslint node: true */
-/*global xit */
+/*global zoo */
 /*jshint -W030 */
 "use strict";
 
@@ -72,7 +71,7 @@ function createOrganization(cb) {
       });
     });
   });
-};
+}
 
 function createUserInOrganization(role, organization, cb) {
   var chance = new Chance();
@@ -100,7 +99,7 @@ function createUserInOrganization(role, organization, cb) {
         cb && cb(err, user);
       }
     });
-};
+}
 
 function createUser(role, cb) {
   var chance = new Chance();
@@ -133,7 +132,7 @@ function createUser(role, cb) {
         });
     }
   });
-};
+}
 
 function createUserAndLogin(role, cb) {
   createUser(role, function (err, user) {
@@ -152,7 +151,7 @@ function createUserAndLogin(role, cb) {
     }
   });
 
-};
+}
 
 /**
  * Clone a plain JSON Object containing MongoDB ObjectIDs
@@ -174,7 +173,7 @@ function clone(add) {
     }
   }
   return origin;
-};
+}
 
 /**
  * Mock express request
@@ -188,7 +187,7 @@ function getReq() {
       }
     }
   };
-};
+}
 
 // Global BDD functions
 global.expect = chai.expect;

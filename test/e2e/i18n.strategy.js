@@ -1,17 +1,11 @@
 /*
  * Copyright (c) Why Not Soluciones, S.L.
- * Licensed under the Copyright license.
  */
 
 /*jslint node: true */
-/*global xit */
+/*global zoo, expect */
 /*jshint -W030 */
 "use strict";
-
-var request = require('superagent'),
-  Chance = require('chance');
-
-var apiEndPoint = "http://127.0.0.1:4000/";
 
 describe('API i18n layer', function () {
 

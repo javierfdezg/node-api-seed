@@ -5,10 +5,7 @@
 /*jslint node: true */
 "use strict";
 
-var winston = require('winston'),
-  util = require('../lib/util'),
-  data = require('../lib/data'),
-  ObjectId = require('mongodb').ObjectID;
+var util = require('../lib/util');
 
 /**
  * Get a specific Business Unit from catalog by id

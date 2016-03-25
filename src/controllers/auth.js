@@ -1,15 +1,11 @@
 /*
- * Copyright (c) 2014 Why Not Soluciones, S.L.
- * Licensed under the Copyright license.
+ * Copyright (c) Why Not Soluciones, S.L.
  */
 
 /*jslint node: true */
 "use strict";
 
-var winston = require('winston'),
-  fs = require('fs'),
-  path = require('path'),
-  util = require('../lib/util'),
+var util = require('../lib/util'),
   Tokens = require('../lib/data').Tokens,
   _ = require('underscore');
 

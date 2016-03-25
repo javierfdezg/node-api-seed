@@ -6,12 +6,8 @@
 "use strict";
 
 var Users = require('../users'),
-  util = require('../../../util'),
   security = require('../../../security'),
   inherits = require('util').inherits,
-  winston = require('winston'),
-  transform = require('../../transformations'),
-  validations = require('../../validations'),
   _ = require('lodash');
 
 var UsersAdmin = module.exports = function (parent) {

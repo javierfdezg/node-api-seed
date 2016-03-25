@@ -1,13 +1,11 @@
 /*
- * Copyright (c) 2014 Why Not Soluciones, S.L.
- * Licensed under the Copyright license.
+ * Copyright (c) Why Not Soluciones, S.L.
  */
 
 /*jslint node: true */
 "use strict";
 var winston = require('winston'),
-  toobusy = require('toobusy-js'),
-  path = require('path');
+  toobusy = require('toobusy-js');
 
 module.exports = function (app, config) {
 

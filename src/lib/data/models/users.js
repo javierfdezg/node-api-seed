@@ -1,6 +1,5 @@
 /*
  * Copyright (c) Why Not Soluciones, S.L.
- * http://exploringjs.com/es6/ch_classes.html
  */
 
 /*jslint node: true */

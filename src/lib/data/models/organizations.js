@@ -6,8 +6,7 @@
 "use strict";
 
 var BaseModel = require('../base-model'),
-  inherits = require('util').inherits,
-  winston = require('winston');
+  inherits = require('util').inherits;
 
 var Organizations = module.exports = function (options, conf) {
 

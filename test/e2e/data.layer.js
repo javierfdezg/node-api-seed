@@ -3,7 +3,7 @@
  */
 
 /*jslint node: true */
-/*global xit */
+/*global zoo, expect */
 /*jshint -W030 */
 "use strict";
 
@@ -27,7 +27,7 @@ describe('API data layer', function () {
       // Create user
       zoo.api.post('/test/user')
         .send(user)
-        .end(function (err, res) {
+        .end(function (err) {
           expect(err).to.be.null;
           // Create user
           zoo.api.post('/test/user').send(user).expect(400, done);

@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2014 Why Not Soluciones, S.L.
- * Licensed under the Copyright license.
+ * Copyright (c) Why Not Soluciones, S.L.
  */
 
 /*jslint node: true */
@@ -54,7 +53,7 @@ module.exports = function (app, config) {
 
   // Add X-Response-Time header (response time) in every response
   app.use(responseTime());
-  
+
   // Body parser
   router.use(bodyParser.json());
   authenticateRouter.use(bodyParser.json());

@@ -3,7 +3,7 @@
  */
 
 /*jslint node: true */
-/*global xit */
+/*global zoo, expect */
 /*jshint -W030 */
 "use strict";
 
@@ -29,14 +29,14 @@ var util = require('../../src/lib/util'),
         user.organization = ObjectID("307f191e810c19729de86000");
       }
       return {
-        limit: function (n) {
+        limit: function () {
           return {
             next: function (cb) {
               cb && cb(null, user);
             }
-          }
+          };
         }
-      }
+      };
     }
   },
   data = {

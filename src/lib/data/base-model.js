@@ -3,10 +3,9 @@
  */
 
 /*jslint node: true */
+"use strict";
 
-var winston = require('winston'),
-  util = require('util'),
-  revalidator = require('revalidator'),
+var util = require('util'),
   transformations = require('./transformations'),
   validations = require('./validations');
 
@@ -15,9 +14,8 @@ var winston = require('winston'),
  * http://mongodb.github.io/node-mongodb-native/2.1/api/
  * @param {[type]} options [description]
  */
-var BaseModel = module.exports = function (options, conf) {
+var BaseModel = module.exports = function (options) {
 
-  var i;
   var self = this;
   if (options.connection === undefined) {
     throw new Error('Error initializing model. DB connection is required');
@@ -31,13 +29,11 @@ var BaseModel = module.exports = function (options, conf) {
 
   // Ensure defined indexes
   if (this.indexes) {
-    for (i = 0; i < this.indexes.length; i++) {
-      (function (index) {
-        self.collection().ensureIndex(index.fieldOrSpec, index.options, function (err) {
-          if (err) throw new Error(util.format('Error setting index %s for collection %s: %s', index.fieldOrSpec, self.collectionName, err.message));
-        });
-      })(this.indexes[i]);
-    }
+    this.indexes.forEach(function (index) {
+      self.collection().ensureIndex(index.fieldOrSpec, index.options, function (err) {
+        if (err) throw new Error(util.format('Error setting index %s for collection %s: %s', index.fieldOrSpec, self.collectionName, err.message));
+      });
+    });
   }
 };
 
@@ -45,7 +41,7 @@ var BaseModel = module.exports = function (options, conf) {
  * Wrapper for mongoDB driver Db() collection. Fetch model collection
  * @return {[type]} [description]
  */
-BaseModel.prototype.collection = function (cb) {
+BaseModel.prototype.collection = function () {
   var self = this;
   return self.conn.collection(self.collectionName);
 };
@@ -67,7 +63,6 @@ BaseModel.prototype.getCollectionAndExecMethod = function (method, args) {
  * @return {[type]}     [description]
  */
 BaseModel.prototype.validate = function (obj, cb) {
-  var validateModel;
   var validate = this.validateSchema(obj);
   // If model especific validate function exists apply
   if (this.validateModel && typeof this.validateModel === 'function') {

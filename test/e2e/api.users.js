@@ -3,7 +3,7 @@
  */
 
 /*jslint node: true */
-/*global xit */
+/*global xit, zoo, expect */
 /*jshint -W030 */
 "use strict";
 
@@ -221,7 +221,7 @@ describe('API Users Services', function () {
     var user;
 
     before(function (done) {
-      zoo.createUser(zoo.security.userRoles.admin, function (err, createdUser, createdToken) {
+      zoo.createUser(zoo.security.userRoles.admin, function (err, createdUser) {
         expect(err).to.be.null;
         user = createdUser;
         done();
@@ -453,7 +453,7 @@ describe('API Users Services', function () {
     });
 
     xit('Avoid update password/salt AND ¿Implement partial updates?', function (done) {
-
+      done();
     });
   });
 

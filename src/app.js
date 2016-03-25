@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2014 Why Not Soluciones, S.L.
- * Licensed under the Copyright license.
+ * Copyright (c) Why Not Soluciones, S.L.
  */
 /*jslint node: true */
 "use strict";
@@ -20,7 +19,7 @@ var cpuCount = 1;
 function restartWorker(worker) {
   winston.warn("Worker %s died. Create another worker", worker.id);
   cluster.fork();
-};
+}
 
 if (cluster.isMaster && config.clusterMode) {
 

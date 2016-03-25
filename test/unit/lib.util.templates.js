@@ -3,7 +3,7 @@
  */
 
 /*jslint node: true */
-/*global xit */
+/*global expect */
 /*jshint -W030 */
 "use strict";
 

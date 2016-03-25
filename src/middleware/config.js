@@ -4,7 +4,7 @@
 
 /*jslint node: true */
 "use strict";
-var util = require('../lib/util/');
+
 var winston = require("winston");
 
 /**
@@ -15,8 +15,8 @@ var winston = require("winston");
  */
 module.exports = function (config) {
   return (function (req, res, next) {
-    if (req && req["config"] === undefined) {
-      req["config"] = config;
+    if (req && req.config === undefined) {
+      req.config = config;
     } else {
       winston.warn("Trying to attach config to req object. Config is already attached");
     }

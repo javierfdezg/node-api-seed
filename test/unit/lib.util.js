@@ -3,7 +3,7 @@
  */
 
 /*jslint node: true */
-/*global xit */
+/*global expect */
 /*jshint -W030 */
 "use strict";
 
@@ -91,7 +91,7 @@ describe('Util module unit tests', function () {
       var accessLevel;
       var user = {
         role: security.userRoles.root
-      }
+      };
       for (accessLevel in security.accessLevels) {
         expect(util.allow(user, security.accessLevels[accessLevel])).to.be.true;
       }
@@ -102,7 +102,7 @@ describe('Util module unit tests', function () {
       var accessLevel;
       var user = {
         role: security.userRoles.public
-      }
+      };
       for (accessLevel in security.accessLevels) {
         if (accessLevel === 'public') {
           expect(util.allow(user, security.accessLevels[accessLevel])).to.be.true;
@@ -111,7 +111,7 @@ describe('Util module unit tests', function () {
         }
       }
       done();
-    })
+    });
   });
 
   describe('owns', function () {

@@ -3,11 +3,11 @@
  */
 
 /*jslint node: true */
-/*global xit */
+/*global zoo, expect */
 /*jshint -W030 */
 "use strict";
 
-var util = require('../../src/lib/util'),
+var winston = require('winston'),
   security = require('../../src/lib/security'),
   ObjectID = require('mongodb').ObjectID,
   express = require('express'),
@@ -39,7 +39,7 @@ describe('Model Validations against JSON Schema', function () {
         UsersAdmin = require('../../src/lib/data').UsersAdmin;
         done();
       }
-    })
+    });
   });
 
   describe('Transformation Helper', function () {
@@ -173,7 +173,7 @@ describe('Model Validations against JSON Schema', function () {
 
         it('Should fail if no organization is present', function (done) {
           var user = zoo.clone(validUser);
-          delete user["organization"];
+          delete user.organization;
           var validation = Users.validateSchema(user);
           expect(validation.valid).to.be.false;
           done();
@@ -181,7 +181,7 @@ describe('Model Validations against JSON Schema', function () {
 
         it('Should fail if no fullName is present', function (done) {
           var user = zoo.clone(validUser);
-          delete user["fullName"];
+          delete user.fullName;
           var validation = Users.validateSchema(user);
           expect(validation.valid).to.be.false;
           done();
@@ -189,7 +189,7 @@ describe('Model Validations against JSON Schema', function () {
 
         it('Should fail if no password is present', function (done) {
           var user = zoo.clone(validUser);
-          delete user["password"];
+          delete user.password;
           var validation = Users.validateSchema(user);
           expect(validation.valid).to.be.false;
           done();
@@ -197,7 +197,7 @@ describe('Model Validations against JSON Schema', function () {
 
         it('Should fail if no email is present', function (done) {
           var user = zoo.clone(validUser);
-          delete user["email"];
+          delete user.email;
           var validation = Users.validateSchema(user);
           expect(validation.valid).to.be.false;
           done();
@@ -205,7 +205,7 @@ describe('Model Validations against JSON Schema', function () {
 
         it('Should fail if no role is present', function (done) {
           var user = zoo.clone(validUser);
-          delete user["role"];
+          delete user.role;
           var validation = Users.validateSchema(user);
           expect(validation.valid).to.be.false;
           done();

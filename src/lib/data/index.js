@@ -5,18 +5,13 @@
 /*jslint node: true */
 "use strict";
 
-var Db = require('mongodb').Db,
-  Connection = require('mongodb').Connection,
-  MongoClient = require('mongodb').MongoClient,
-  ObjectId = require('mongodb').ObjectID,
-  winston = require('winston'),
+var MongoClient = require('mongodb').MongoClient,
   fs = require('fs'),
   util = require('../util');
 
 // MongoDB connection instance
 var conn;
 var conf;
-var models = {};
 
 module.exports = function (app, config, cb) {
 
@@ -74,18 +69,18 @@ module.exports.getModel = function (collectionName) {
  * @return {[type]}      [description]
  */
 function initialize(config, cb) {
-  var stat, modelsList, model, i, j;
+  var stat, modelsList, model;
   var Model, collectionName, className;
   var submodels, Submodel, submodel, submodelClassName;
 
   // Get all models and init them
   modelsList = fs.readdirSync(__dirname + '/models');
-  for (i = 0; i < modelsList.length; i++) {
-    stat = fs.statSync(__dirname + '/models/' + modelsList[i]);
+  modelsList.forEach(function (item) {
+    stat = fs.statSync(__dirname + '/models/' + item);
     if (stat.isFile()) {
       // Create and export model
-      Model = require('./models/' + modelsList[i]);
-      collectionName = (Model.collectionName !== undefined) ? Model.collectionName : util.fileToCollectionName(modelsList[i]);
+      Model = require('./models/' + item);
+      collectionName = (Model.collectionName !== undefined) ? Model.collectionName : util.fileToCollectionName(item);
       model = new Model({
         connection: conn,
         collectionName: collectionName
@@ -94,19 +89,19 @@ function initialize(config, cb) {
       className = util.collectionToClassName(collectionName);
       module.exports[className] = model;
       // Get submodel helpers if any
-      submodels = getSubmodelHelpersSync(__dirname + '/models/' + modelsList[i]);
-      for (j = 0; j < submodels.length; j++) {
-        Submodel = submodels[j].module;
-        submodelClassName = className + submodels[j].name;
+      submodels = getSubmodelHelpersSync(__dirname + '/models/' + item);
+      submodels.forEach(function (subItem) {
+        Submodel = subItem.module;
+        submodelClassName = className + subItem.name;
         submodel = new Submodel(model);
         module.exports[submodelClassName] = submodel;
-      }
+      });
     }
-  }
+  });
 
   // Callback
   cb && cb(null, module.exports);
-};
+}
 
 /**
  * [getSubmodelHelpersSync description]
@@ -115,7 +110,7 @@ function initialize(config, cb) {
  */
 function getSubmodelHelpersSync(modelFilePath) {
   var submodels = [];
-  var stat, submodelsList, i, sbStat, Submodel,
+  var stat, submodelsList, Submodel,
     className, collectionName;
   // Check if submodels directory exists
   if (modelFilePath) {
@@ -130,21 +125,21 @@ function getSubmodelHelpersSync(modelFilePath) {
     // If submodel dir exists, init submodels
     if (stat && stat.isDirectory()) {
       submodelsList = fs.readdirSync(submodelDir);
-      for (i = 0; i < submodelsList.length; i++) {
-        stat = fs.statSync(submodelDir + '/' + submodelsList[i]);
+      submodelsList.forEach(function (item) {
+        stat = fs.statSync(submodelDir + '/' + item);
         if (stat.isFile()) {
-          Submodel = require(submodelDir + '/' + submodelsList[i]);
-          collectionName = (Submodel.collectionName !== undefined) ? Submodel.collectionName : util.fileToCollectionName(submodelsList[i]);
+          Submodel = require(submodelDir + '/' + item);
+          collectionName = (Submodel.collectionName !== undefined) ? Submodel.collectionName : util.fileToCollectionName(item);
           className = util.collectionToClassName(collectionName);
           submodels.push({
             name: className,
             module: Submodel
           });
         }
-      }
+      });
     }
 
   }
 
   return submodels;
-};
+}

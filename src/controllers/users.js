@@ -9,8 +9,7 @@ var winston = require('winston'),
   util = require('../lib/util'),
   security = require('../lib/security'),
   Users = require('../lib/data').Users,
-  ObjectID = require('mongodb').ObjectID,
-  Organizations = require('../lib/data').Organizations;
+  ObjectID = require('mongodb').ObjectID;
 
 /**
  * Get an user
@@ -86,7 +85,6 @@ exports.del = function (req, res) {
  * @return {[type]}      [description]
  */
 function saveOrUpdate(user, req, res) {
-  var validation;
   var update = (user._id !== undefined);
 
   // If user is root and no organization is specified for user

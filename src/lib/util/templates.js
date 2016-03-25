@@ -5,8 +5,7 @@
 /*jslint node: true */
 "use strict";
 
-var winston = require('winston'),
-  objectPath = require("object-path"),
+var objectPath = require("object-path"),
   _ = require('lodash'),
   hogan = require("hogan.js");
 
@@ -34,8 +33,8 @@ exports.extractParams = function () {
  * @return populated template
  */
 exports.populate = function (template, payload) {
-  var template = hogan.compile(template);
-  return template.render(payload);
+  var tpl = hogan.compile(template);
+  return tpl.render(payload);
 };
 
 /**

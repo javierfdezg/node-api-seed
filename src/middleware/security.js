@@ -31,14 +31,12 @@ function securityMethod(securityType, selectedMethods) {
   }
 
   return function (req, res, next) {
-    var securityMethods = [];
 
     // If Authorization header is present
     if (req.headers && req.headers.authorization) {
       var parts = req.headers.authorization.split(' ');
       if (parts.length == 2) {
-        var scheme = parts[0],
-          credentials = parts[1];
+        var scheme = parts[0];
         if (auth[securityType][scheme] !== undefined && methods.indexOf(scheme) !== -1) {
           auth[securityType][scheme](req, res, next);
         } else {
@@ -59,7 +57,7 @@ function securityMethod(securityType, selectedMethods) {
       next();
     }
   };
-};
+}
 
 module.exports.authentication = function (methods) {
   return securityMethod('authenticationMethods', methods);
@@ -140,7 +138,6 @@ auth.authorizationMethods.Bearer = function (req, res, next) {
  */
 auth.authenticationMethods.Basic = function (req, res, next) {
 
-  var email = null;
   var password = null;
 
   // If Authorization header is present
@@ -149,8 +146,7 @@ auth.authenticationMethods.Basic = function (req, res, next) {
     if (parts.length == 2) {
       var scheme = parts[0],
         credentials = parts[1],
-        decodedCredentials,
-        parts, user, password;
+        decodedCredentials, user;
       // HTTP Basic schema
       if (/^Basic$/i.test(scheme)) {
         // decode and parse credentials
@@ -219,14 +215,14 @@ auth.authenticationMethods.Basic = function (req, res, next) {
  * @return {[type]}        [description]
  */
 auth.authorizationMethods.WNS = function (req, res, next) {
-  var keySignature, key, signature, scheme, parts, payloadSignature, organization;
+  var keySignature, key, signature, scheme, parts, organization;
 
   // If Authorization header is present
   if (req.headers && req.headers.authorization) {
     parts = req.headers.authorization.split(' ');
     if (parts.length == 2) {
-      scheme = parts[0],
-        keySignature = parts[1];
+      scheme = parts[0];
+      keySignature = parts[1];
       // WNS API Key schema
       if (/^WNS$/i.test(scheme)) {
         parts = keySignature.split(':');
@@ -340,7 +336,7 @@ module.exports.checkOwnerAndExecAction = function (controller, action, accessLev
     var parts = req.path.split("/");
     var model, id;
 
-    if (!parts || parts.length < 3 || parts[1] == '' || parts[2] == '') {
+    if (!parts || parts.length < 3 || parts[1] === '' || parts[2] === '') {
       util.sendResponse(req, res, 500, {
         error: req.i18n.__('Invalid resource')
       });
