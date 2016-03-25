@@ -28,7 +28,7 @@ var BaseModel = module.exports = function (options) {
   this.collectionName = options.collectionName;
 
   // Ensure defined indexes
-  if (this.indexes) {
+  if (this.indexes !== undefined && (Object.prototype.toString.call(this.indexes) === '[object Array]')) {
     this.indexes.forEach(function (index) {
       self.collection().ensureIndex(index.fieldOrSpec, index.options, function (err) {
         if (err) throw new Error(util.format('Error setting index %s for collection %s: %s', index.fieldOrSpec, self.collectionName, err.message));
