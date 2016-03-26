@@ -95,7 +95,7 @@ describe('API security layer', function () {
     });
 
     beforeEach(function (done) {
-      delete req["body"];
+      delete req.body;
       done();
     });
 
