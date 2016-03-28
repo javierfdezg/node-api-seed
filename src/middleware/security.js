@@ -385,3 +385,23 @@ module.exports.checkOwnerAndExecAction = function (controller, action, accessLev
   });
 
 };
+
+/**
+ * Execute and action only if is called from localhost
+ * @param  {[type]} controller  [description]
+ * @param  {[type]} action      [description]
+ * @param  {[type]} accessLevel [description]
+ * @return {[type]}             [description]
+ */
+module.exports.execLocalAction = function (controller, action, accessLevel) {
+  return (function (req, res, next) {
+
+    if (req.ip && (req.ip === '127.0.0.1' ||  req.ip === '::ffff:127.0.0.1' || req.ip === '::1')) {
+      module.exports.execAction(controller, action, accessLevel)(req, res, next);
+    } else {
+      util.sendResponse(req, res, 401, {
+        error: req.i18n.__('Unauthorized')
+      });
+    }
+  });
+};
