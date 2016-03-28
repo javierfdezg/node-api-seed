@@ -3,6 +3,7 @@
  */
 
 /*jslint node: true */
+/*jshint -W030 */
 "use strict";
 
 var express = require('express'),
@@ -203,4 +204,4 @@ function haltOnTimedout(req, res, next) {
   if (!req.timedout) {
     next();
   }
-};
+}

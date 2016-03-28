@@ -3,6 +3,7 @@
  */
 
 /*jslint node: true */
+/*jshint -W030 */
 "use strict";
 
 var winston = require('winston'),
@@ -202,4 +203,4 @@ function BigObject() {
     return this;
   };
 
-};
+}

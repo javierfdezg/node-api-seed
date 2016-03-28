@@ -3,6 +3,7 @@
  */
 
 /*jslint node: true */
+/*jshint -W030 */
 "use strict";
 
 var revalidator = require('revalidator'),

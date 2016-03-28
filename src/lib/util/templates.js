@@ -3,6 +3,7 @@
  */
 
 /*jslint node: true */
+/*jshint -W030 */
 "use strict";
 
 var objectPath = require("object-path"),

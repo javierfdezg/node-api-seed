@@ -3,6 +3,7 @@
  */
 
 /*jslint node: true */
+/*jshint -W030 */
 "use strict";
 var timeout = require('connect-timeout'),
   auth = require('../lib/security'),

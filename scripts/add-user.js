@@ -4,6 +4,7 @@
  */
 
 /*jslint node: true */
+/*jshint -W030 */
 "use strict";
 
 var app = {},
@@ -34,7 +35,7 @@ var cli = commandLineArgs([{
 var user = cli.parse();
 
 if (user.createUser === 'yes') {
-  delete user["createUser"];
+  delete user.createUser;
   user.role = security.userRoles.admin;
   require('../src/lib/data')(app, config.data, function (err, data) {
     var Users = require('../src/lib/data').Users;
