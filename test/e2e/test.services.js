@@ -15,12 +15,6 @@ describe('API Test services', function () {
       .end(done);
   });
 
-  it('Should test exception service', function (done) {
-    zoo.api.get('/test/exception')
-      .expect(500)
-      .end(done);
-  });
-
   it('Should test long-time service', function (done) {
     this.timeout(5000);
     zoo.api.get('/test/long-time')

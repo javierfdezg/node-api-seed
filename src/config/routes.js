@@ -78,22 +78,21 @@ module.exports = function (app, config) {
   testRouter.use(i18nm);
 
   // ------------------------- TEST ONLY SERVICES -------------------------
-  testRouter.get('/timeout', timeout(1000), test.testTimeout); // test timeout middleware
-  testRouter.get('/exception', timeout(1000), test.testUnhandledException); // test UnhandledException
-  testRouter.get('/memory-leak', timeout(10000000), test.testMemoryLeak); // test Memory leak
-  testRouter.get('/out-of-memory', timeout(10000000), test.testOutOfMemory); // test Out of Memory
-  testRouter.get('/long-time', timeout(1000000), test.testLongTime); // test long time loading resource
-  testRouter.get('/mongo-connection', timeout(2000), test.testMongoConnection); // test mongo connection
-  testRouter.get('/public', timeout(2000), security.execAction('test', 'testPublic', auth.accessLevels.public)); // test public resource
-  testRouter.get('/protected', timeout(2000), security.execAction('test', 'testProtected', auth.accessLevels.admin)); // test protected resource
-  testRouter.get('/protected-root', timeout(2000), security.execAction('test', 'testProtected', auth.accessLevels.root)); // test protected root resource
-  testRouter.get('/protected-readonly', timeout(2000), security.execAction('test', 'testProtected', auth.accessLevels.readonly)); // test protected read-only resource
-  testRouter.get('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.admin)); // test protected resource
-  testRouter.post('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.admin)); // test protected resource
-  testRouter.put('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.admin)); // test protected resource
-  testRouter["delete"]('/protected-apikey', timeout(2000), security.execAction('test', 'testProtectedApiKey', auth.accessLevels.admin)); // test protected resource
-  testRouter.post('/user', timeout(2000), test.testCreateUser); // test create user
-  testRouter.post('/organization', timeout(2000), test.testCreateOrganization); // test create oganization
+  testRouter.get('/timeout', timeout(1000), security.execLocalAction('test', 'timeout', auth.accessLevels.public)); // test timeout middleware
+  testRouter.get('/memory-leak', timeout(10000000), security.execLocalAction('test', 'memoryLeak', auth.accessLevels.public)); // test Memory leak
+  testRouter.get('/out-of-memory', timeout(10000000), security.execLocalAction('test', 'outOfMemory', auth.accessLevels.public)); // test Out of Memory
+  testRouter.get('/long-time', timeout(1000000), security.execLocalAction('test', 'longTime', auth.accessLevels.public)); // test long time loading resource
+  testRouter.get('/mongo-connection', timeout(2000), security.execLocalAction('test', 'mongoConnection', auth.accessLevels.public)); // test mongo connection
+  testRouter.get('/public', timeout(2000), security.execLocalAction('test', 'public', auth.accessLevels.public)); // test public resource
+  testRouter.get('/protected', timeout(2000), security.execLocalAction('test', 'protected', auth.accessLevels.admin)); // test protected resource
+  testRouter.get('/protected-root', timeout(2000), security.execLocalAction('test', 'protected', auth.accessLevels.root)); // test protected root resource
+  testRouter.get('/protected-readonly', timeout(2000), security.execLocalAction('test', 'protected', auth.accessLevels.readonly)); // test protected read-only resource
+  testRouter.get('/protected-apikey', timeout(2000), security.execLocalAction('test', 'protectedApiKey', auth.accessLevels.admin)); // test protected resource
+  testRouter.post('/protected-apikey', timeout(2000), security.execLocalAction('test', 'protectedApiKey', auth.accessLevels.admin)); // test protected resource
+  testRouter.put('/protected-apikey', timeout(2000), security.execLocalAction('test', 'protectedApiKey', auth.accessLevels.admin)); // test protected resource
+  testRouter["delete"]('/protected-apikey', timeout(2000), security.execLocalAction('test', 'protectedApiKey', auth.accessLevels.admin)); // test protected resource
+  testRouter.post('/user', timeout(2000), security.execLocalAction('test', 'createUser', auth.accessLevels.public)); // test create user
+  testRouter.post('/organization', timeout(2000), security.execLocalAction('test', 'createOrganization', auth.accessLevels.public)); // test create oganization
   // ----------------------------------------------------------------------
 
   // --------------------------- AUTH SERVICES ----------------------------
@@ -115,7 +114,7 @@ module.exports = function (app, config) {
   app.use(haltOnTimedout);
 
   // Static content routing
-  app.use(express.static(__dirname + '/../../web/' + (app.get("production") ? "production" : "development")));
+  app.use(express.static(__dirname + '/../../web'));
 
   app.use(haltOnTimedout);
 
@@ -157,12 +156,10 @@ module.exports = function (app, config) {
 
   app.use(haltOnTimedout);
 
-  // If not in production, configure test routes
-  if (!app.get("production")) {
-    // Main router
-    app.use('/test', testRouter);
-    app.use(haltOnTimedout);
-  }
+  // Test router
+  app.use('/test', testRouter);
+
+  app.use(haltOnTimedout);
 
   // 404 routes
   app.use(function (req, res, next) {

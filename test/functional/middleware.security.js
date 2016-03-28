@@ -64,7 +64,7 @@ describe('Security middleware Unit Tests', function () {
 
   describe('execAction', function () {
 
-    var spy = sinon.spy(test, 'testProtectedApiKey');
+    var spy = sinon.spy(test, 'protectedApiKey');
 
     beforeEach(function () {
       req = zoo.getReq();
@@ -75,7 +75,7 @@ describe('Security middleware Unit Tests', function () {
 
     it('Should execute controller/action when organization is present in request', function (done) {
 
-      var middleware = security.execAction('test', 'testProtectedApiKey', zoo.security.accessLevels.admin);
+      var middleware = security.execAction('test', 'protectedApiKey', zoo.security.accessLevels.admin);
       req.organizationObject = {};
       middleware(req, {}, function () {
         done('Controller action not found');
@@ -89,7 +89,7 @@ describe('Security middleware Unit Tests', function () {
 
     it('Should call util.allow when organization not present in request and not execute protected action and return HTTP status 401', function (done) {
 
-      var middleware = security.execAction('test', 'testProtectedApiKey', zoo.security.accessLevels.admin);
+      var middleware = security.execAction('test', 'protectedApiKey', zoo.security.accessLevels.admin);
       req.user = {};
       middleware(req, {}, function () {
         done('Controller action not found');
@@ -105,7 +105,7 @@ describe('Security middleware Unit Tests', function () {
 
     it('Should not execute controller/action and return HTTP status 401 when no organization or user present in request', function (done) {
 
-      var middleware = security.execAction('test', 'testProtectedApiKey', zoo.security.accessLevels.admin);
+      var middleware = security.execAction('test', 'protectedApiKey', zoo.security.accessLevels.admin);
       middleware(req, {}, function () {
         done('Controller action not found');
       });
@@ -119,7 +119,7 @@ describe('Security middleware Unit Tests', function () {
 
     it('Should execute public controller/action when no organization or user present in request', function (done) {
 
-      var middleware = security.execAction('test', 'testProtectedApiKey', zoo.security.accessLevels.public);
+      var middleware = security.execAction('test', 'protectedApiKey', zoo.security.accessLevels.public);
       middleware(req, {}, function () {
         done('Controller action not found');
       });

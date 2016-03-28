@@ -20,17 +20,7 @@ var winston = require('winston'),
  * @param  {[type]} res
  * @return {[type]}
  */
-exports.testTimeout = function (req, res) {};
-
-/**
- * Used to test unhandled exception in request
- * @param  {[type]} req
- * @param  {[type]} res
- * @return {[type]}
- */
-exports.testUnhandledException = function (req, res) {
-  throw new Error("oops, we'll crash"); // Unexpected action exception
-};
+exports.timeout = function (req, res) {};
 
 /**
  * Used to test out of memory error
@@ -38,7 +28,7 @@ exports.testUnhandledException = function (req, res) {
  * @param  {[type]} res
  * @return {[type]}
  */
-exports.testOutOfMemory = function (req, res) {
+exports.outOfMemory = function (req, res) {
 
   var stack = [];
   var bigObject = null;
@@ -56,7 +46,7 @@ exports.testOutOfMemory = function (req, res) {
  * @param  {[type]} res
  * @return {[type]}
  */
-exports.testMemoryLeak = function (req, res) {
+exports.memoryLeak = function (req, res) {
   var heap = [];
   setInterval(function () {
     heap[heap.length] = (new BigObject()).fill();
@@ -72,7 +62,7 @@ exports.testMemoryLeak = function (req, res) {
  * @param  {[type]} res [description]
  * @return {[type]}     [description]
  */
-exports.testMongoConnection = function (req, res) {
+exports.mongoConnection = function (req, res) {
   // Mongo connection
   require('../lib/data')(null, null, function (err) {
     if (err) {
@@ -93,7 +83,7 @@ exports.testMongoConnection = function (req, res) {
  * @param  {[type]} res [description]
  * @return {[type]}     [description]
  */
-exports.testPublic = function (req, res) {
+exports.public = function (req, res) {
   util.sendResponse(req, res, 200, {
     message: req.i18n.__('Public Message')
   });
@@ -105,7 +95,7 @@ exports.testPublic = function (req, res) {
  * @param  {[type]} res [description]
  * @return {[type]}     [description]
  */
-exports.testProtected = function (req, res) {
+exports.protected = function (req, res) {
   if (req.user) {
     util.sendResponse(req, res, 200, {
       secured: req.user
@@ -123,7 +113,7 @@ exports.testProtected = function (req, res) {
  * @param  {[type]} res [description]
  * @return {[type]}     [description]
  */
-exports.testProtectedApiKey = function (req, res) {
+exports.protectedApiKey = function (req, res) {
   if (req.organization) {
     util.sendResponse(req, res, 200, {
       secured: req.organization
@@ -142,7 +132,7 @@ exports.testProtectedApiKey = function (req, res) {
  * @param  {[type]} res [description]
  * @return {[type]}     [description]
  */
-exports.testCreateUser = function (req, res) {
+exports.createUser = function (req, res) {
   var user = req.body;
   user.delete_from = new Date(); // Set expiration (test users can be deleted)
   user.organization = ObjectID(user.organization);
@@ -157,7 +147,7 @@ exports.testCreateUser = function (req, res) {
   });
 };
 
-exports.testCreateOrganization = function (req, res) {
+exports.createOrganization = function (req, res) {
   var organization = req.body;
   organization.delete_from = new Date(); // Set expiration (test organizations can be deleted)
   Organizations.insertOne(organization, {
@@ -177,7 +167,7 @@ exports.testCreateOrganization = function (req, res) {
  * @param  {[type]} res [description]
  * @return {[type]}     [description]
  */
-exports.testLongTime = function (req, res) {
+exports.longTime = function (req, res) {
   setTimeout(function () {
     var img = fs.readFileSync(path.normalize(__dirname + '/../../web/development/img/futurama.png'));
     res.writeHead(200, {

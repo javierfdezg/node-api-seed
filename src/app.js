@@ -39,9 +39,6 @@ if (cluster.isMaster && config.clusterMode) {
 
   app = express();
 
-  // production flag
-  app.set("production", config.httpp == 80 && config.httpsp == 443);
-
   // Disable X-Powered-By HTTP response header
   app.disable('x-powered-by');
 
