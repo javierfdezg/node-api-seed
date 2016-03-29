@@ -51,7 +51,7 @@ if (cluster.isMaster && config.clusterMode) {
   require('./config/logging')(app, config);
 
   // Data layer connection and server startup
-  require('./lib/data')(app, config.data, function (err) {
+  require('./lib/data')(config.data, function (err) {
     // No data connection available
     if (err) {
       winston.error(err.toString());

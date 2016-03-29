@@ -64,7 +64,7 @@ exports.memoryLeak = function (req, res) {
  */
 exports.mongoConnection = function (req, res) {
   // Mongo connection
-  require('../lib/data')(null, null, function (err) {
+  require('../lib/data')(null, function (err) {
     if (err) {
       util.sendResponse(req, res, 500, {
         error: 'No mongo connection available'
@@ -169,7 +169,7 @@ exports.createOrganization = function (req, res) {
  */
 exports.longTime = function (req, res) {
   setTimeout(function () {
-    var img = fs.readFileSync(path.normalize(__dirname + '/../../web/development/img/futurama.png'));
+    var img = fs.readFileSync(path.normalize(__dirname + '/../../web/img/futurama.png'));
     res.writeHead(200, {
       'Content-Type': 'image/png'
     });

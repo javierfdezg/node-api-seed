@@ -10,7 +10,6 @@
 var winston = require('winston'),
   security = require('../../src/lib/security'),
   ObjectID = require('mongodb').ObjectID,
-  express = require('express'),
   config = require('../../src/config/params'),
   validations = require('../../src/lib/data/validations'),
   transformations = require('../../src/lib/data/transformations');
@@ -29,7 +28,7 @@ describe('Model Validations against JSON Schema', function () {
   var UsersAdmin;
 
   before(function (done) {
-    require('../../src/lib/data')(express(), config.data, function (err) {
+    require('../../src/lib/data')(config.data, function (err) {
       // No data connection available
       if (err) {
         winston.error(err.toString());

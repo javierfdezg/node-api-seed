@@ -14,7 +14,7 @@ var MongoClient = require('mongodb').MongoClient,
 var conn;
 var conf;
 
-module.exports = function (app, config, cb) {
+module.exports = function (config, cb) {
 
   var url;
   var authentication = '';
