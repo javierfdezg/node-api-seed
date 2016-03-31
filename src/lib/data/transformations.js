@@ -41,6 +41,18 @@ module.exports.mongoObjectID = function (obj) {
   }
 };
 
+module.exports.arrayMongoObjectID = function (arr) {
+  var i;
+  if (arr && Object.prototype.toString.call(arr) === '[object Array]') {
+    for (i = 0; i < arr.length; i++) {
+      arr[i] = module.exports.mongoObjectID(arr[i]);
+    }
+    return arr;
+  } else {
+    return arr;
+  }
+};
+
 module.exports.javascriptDate = function (obj) {
   if (typeof obj === 'string') {
     return new Date(obj);
