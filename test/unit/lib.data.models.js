@@ -331,6 +331,31 @@ describe('Model Validations against JSON Schema', function () {
         expect(validations.hexadecimalStringObjectID("123456789012345gfaaa0120")).to.be.false;
         done();
       });
+
+      it('Should not validate a number', function (done) {
+        expect(validations.hexadecimalStringObjectID(12)).to.be.false;
+        done();
+      });
+    });
+
+    describe('hexadecimalArrayObjectID', function () {
+      it('Should validate an Array containing valid String ObjectIDs', function (done) {
+        var arr = [(new ObjectID()).toString(), (new ObjectID()).toString(), (new ObjectID()).toString()];
+        expect(validations.hexadecimalArrayObjectID(arr)).to.be.true;
+        done();
+      });
+
+      it('Should not validate an Array containing an Integer', function (done) {
+        var arr = [(new ObjectID()).toString(), 12, (new ObjectID()).toString()];
+        expect(validations.hexadecimalArrayObjectID(arr)).to.be.false;
+        done();
+      });
+
+      it('Should not validate an Array containing a non-valid ObjectId string representation', function (done) {
+        var arr = [(new ObjectID()).toString(), (new ObjectID()).toString(), "123456789012345gfaaa0120"];
+        expect(validations.hexadecimalArrayObjectID(arr)).to.be.false;
+        done();
+      });
     });
 
     describe('ObjectID', function () {

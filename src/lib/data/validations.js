@@ -28,9 +28,32 @@ module.exports.validateSchema = function (obj, schema) {
 module.exports.hexadecimalStringObjectID = function (obj) {
   var objectId;
   try {
-    objectId = new ObjectID(obj);
-    return objectId.toHexString() === obj;
+    if (typeof obj !== 'string') {
+      return false;
+    } else {
+      objectId = new ObjectID(obj);
+      return objectId.toHexString() === obj;
+    }
   } catch (ex) {
+    return false;
+  }
+};
+
+/**
+ * Check is an Array contains only valid string hexadecimal representations of ObjectIDs
+ * @param  {[type]} arr [description]
+ * @return {[type]}     [description]
+ */
+module.exports.hexadecimalArrayObjectID = function (arr) {
+  var i;
+  if (arr && Object.prototype.toString.call(arr) === '[object Array]') {
+    for (i = 0; i < arr.length; i++) {
+      if (!module.exports.hexadecimalStringObjectID(arr[i])) {
+        return false;
+      }
+    }
+    return true;
+  } else {
     return false;
   }
 };
