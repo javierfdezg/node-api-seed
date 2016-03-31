@@ -2,10 +2,13 @@
  	"globals" : {
 	 /* MOCHA */
 	 "describe" : false,
-	 "it" : false,
+   "xdescribe" : false,
+	 "xit" : false,
+   "it" : false,
 	 "before" : false,
 	 "beforeEach" : false,
 	 "after" : false,
-	 "afterEach" : false
+	 "afterEach" : false,
+   "expect": false
 	}
 }
