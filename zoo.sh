@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ -f .zooconfig ]; 
+then 
+  source .zooconfig
+fi
+
 ask() {
     # http://djm.me/ask
     while true; do
@@ -54,12 +59,12 @@ init_aux() {
 
   # Check if there is a docker-machine
   echo -e -n "\tDocker machine... "
-  if (( $(docker-machine ls | wc -l | tr -d ' ') > 1 )); then
+  if [[ "${dockerMachineCommand} ls | wc -l | tr -d ' '" -gt "1" ]]; then
     echo "found"
   else
     echo "not found"
     if ask "Create a docker machine now?" Y; then
-      ./docker-tools/docker-machine-create default
+      ./docker-tools/docker-machine-create
     else
       echo "You need a Docker machine to use this framework. Please fix"
       exit 1;
@@ -146,12 +151,12 @@ function ctrl_c() {
 
 if [ "$1" != "init" ] && [ "$1" != "" ];
 then
-  docker-machine ls | if grep --silent 'default.*Stopped'
+  ${dockerMachineCommand} ls | if grep --silent 'default.*Stopped'
   then
     echo "Docker VM not running."
-    docker-machine start default
+    ${dockerMachineCommand} start default
   fi
-  eval "$(docker-machine env default)"
+  eval $(${dockerMachineCommand} env default)
 fi
 
 case $1 in

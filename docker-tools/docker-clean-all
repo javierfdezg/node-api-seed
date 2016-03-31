@@ -1,6 +1,6 @@
 #!/bin/bash
 source .zooconfig
-eval "$(docker-machine env default)"
+eval "$(${dockerMachineCommand} env default)"
 
 case $1 in
   image)

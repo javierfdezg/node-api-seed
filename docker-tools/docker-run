@@ -1,6 +1,16 @@
 #!/bin/bash
 source .zooconfig
-eval "$(docker-machine env default)"
+
+# Check if the Docker default machine is running
+# If you are using other virtualization such as 
+# Parallels desktop you might have to stop the VB
+# default machine
+${dockerMachineCommand} ls | if ! grep --silent default
+then
+  ${dockerMachineCommand} start
+fi
+
+eval "$(${dockerMachineCommand} env default)"
 
 # Check if container exists
 docker ps | if grep --silent ${projectName}

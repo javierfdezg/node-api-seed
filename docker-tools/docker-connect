@@ -1,5 +1,5 @@
 #!/bin/bash 
 source .zooconfig
-eval "$(docker-machine env default)"
+eval "$(${dockerMachineCommand} env default)"
 
 docker exec -i -t ${projectName} $1

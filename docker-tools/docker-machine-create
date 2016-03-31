@@ -1,7 +1,8 @@
 #!/bin/bash
-eval "$(docker-machine env default)"
+source .zooconfig
+eval "$(${dockerMachineCommand} env default)"
 
-echo -n "Creating docker machine with name $1..."
-docker-machine create --driver virtualbox $1
+echo -n "Creating docker machine with name default..."
+${dockerMachineCommand} create --driver virtualbox default
 echo "done"
 
