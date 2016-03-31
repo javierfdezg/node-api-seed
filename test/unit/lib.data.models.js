@@ -82,6 +82,7 @@ describe('Model Validations against JSON Schema', function () {
           id: new ObjectID()
         }]
       },
+      targets: [new ObjectID(), new ObjectID(), new ObjectID(), new ObjectID(), new ObjectID()],
       deliveries: [{
         mta_status: 'not-delivered',
         send_from: new Date(),
@@ -125,6 +126,9 @@ describe('Model Validations against JSON Schema', function () {
               }
             }
           }
+        },
+        targets: {
+          transform: transformations.arrayMongoObjectID
         },
         deliveries: {
           properties: {
