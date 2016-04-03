@@ -176,7 +176,7 @@ module.exports = function (app, config) {
     // Timeout
     if (err && err.status == 503) {
       winston.warn("[API TIMEOUT ERROR] %s -- %s %s", req.ip, req.method, req.path);
-      res.jsonp(503, {
+      res.status(503).jsonp({
         error: "Service unavailable"
       });
     }
