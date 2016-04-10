@@ -15,6 +15,7 @@ var supertest = require('supertest'),
   Chance = require('chance'),
   chai = require('chai');
 chai.use(require('chai-datetime'));
+chai.use(require('chai-subset'));
 
 var sendResponseCallbackSpy = sinon.spy(); // Tip: reset in beforeEach zoo.sendResponseCallbackSpy.reset() if necesary
 
