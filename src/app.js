@@ -11,7 +11,10 @@ var app, winston = require('winston'),
   http = require('http'),
   envConfig = require('node-env-configuration'),
   defaults = require('./config/params'),
-  config = envConfig(defaults.appName, defaults),
+  config = envConfig({
+    defaults: defaults,
+    prefix: defaults.appName
+  }),
   fs = require('fs'),
   cluster = require('cluster');
 
